@@ -2,4 +2,21 @@
 
 [ $# -ne 1 ] && echo "you need to url argument" && exit 1
 url=$1
-echo $url
+
+tmp_name=/tmp/video-to-cut.mp4
+export_name=cutted.mp4
+
+[ -f $tmp_name ] && rm $tmp_name
+
+# download video
+youtube-dl -f 'best' -o $tmp_name $url
+
+start=$(rofi -theme input.rasi -dmenu -i -p 'Start')
+[[ -z $start ]] && start="00:00"
+end=$(rofi -theme input.rasi -dmenu -i -p 'End')
+[[ -z $end ]] && notify-send "Youtube-cutter" "No ending specified and cant be assumed" && exit 1
+
+[ -f $export_name ] && rm $export_name
+
+ffmpeg -ss $start -i $tmp_name -t $end -c copy $export_name
+notify-send "Youtube-cutter" "File is in your home folder, cutted"
