@@ -1,0 +1,5 @@
+#!/bin/bash
+
+[ $# -ne 1 ] && echo "you need to url argument" && exit 1
+url=$1
+echo $url
