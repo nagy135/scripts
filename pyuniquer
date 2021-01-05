@@ -1,0 +1,13 @@
+#!/usr/bin/python
+
+import sys
+
+lines = []
+with open(sys.argv[1], 'r') as t:
+    for line in t:
+        line = line.strip()
+        if line not in lines:
+            lines.append(line)
+
+with open(sys.argv[1], 'w') as t:
+    t.write("\n".join(lines))

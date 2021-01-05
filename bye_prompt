@@ -1,0 +1,18 @@
+#!/bin/bash
+
+chosen=$(echo -e "Power OFF\nHibernate\nSuspend\nReboot\nLock" | rofi -i -p 'BYE PROMPT' -dmenu -theme tmux)
+echo $chosen
+if [[ $chosen = 'Power OFF' ]]; then
+	loginctl poweroff
+elif [[ $chosen = 'Hibernate' ]]; then
+	loginctl hibernate
+elif [[ $chosen = 'Suspend' ]]; then
+    sleep 0.1
+	loginctl suspend
+elif [[ $chosen = 'Reboot' ]]; then
+	loginctl reboot
+elif [[ $chosen = 'Lock' ]]; then
+    inactivity_lock
+else
+    echo 'Doing nothing.'
+fi

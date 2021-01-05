@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# if [[ ! $(pidof ncmpcpp) ]]; then
+# if [[ ! $(pidof spotifyd) ]]; then
+#     spotifyd &
+# fi
+if [[ ! $(pidof spotify) ]]; then
+    bspc desktop -f 10
+    spotify
+    # alacritty --class 'ncmpcpp' -e spt &> /dev/null &
+    # alacritty --class 'ncmpcpp' -e ncmpcpp &> /dev/null &
+else
+    bspc desktop -f 10
+fi

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+[[ -z $1 ]] && notify-send "Filer" "no argument provided" && exit 1
+
+mesg=$(echo -e "Open: Enter - Clipboard: Alt+1" | column -s '-' -t)
+
+chosen=$(ls $1 | rofi -dmenu -i -p "Filer" -mesg "$mesg")
+signal=$?
+chosen=$(echo "$chosen" | tr -d '\n')
+[[ -z $chosen ]] && notify-send "Filer" "no file selected" && exit 1
+
+chosen="$1/$chosen"
+[[ $signal -eq 10 ]] && echo -n $chosen | xclip -selection clipboard && exit 0
+
+[[ -d $chosen ]] && $TERMINAL --working-directory "$chosen" && exit 0
+
+case "$chosen" in
+    *.jpg | *.png ) 
+        echo png
+        sxiv $chosen &
+        ;;
+    *.pdf ) 
+        echo pdf
+        zathura $chosen &> /dev/null &
+        ;;
+    *)
+        echo last
+        $TERMINAL -e nvim $chosen
+        ;;
+esac

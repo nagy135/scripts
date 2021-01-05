@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [[ $1 == "--stop" ]]; then
+    [[ -f /tmp/recorder.pid ]] && kill $(cat /tmp/recorder.pid)
+    notify-send -i none -t 2000 "RECORDER" "instance ended"
+    ffmpeg -i /tmp/temp_record.ogv \
+        -c:v libx264 -preset veryslow -crf 22 \
+        -c:a libmp3lame -qscale:a 2 -ac 2 -ar 44100 \
+        ~/screencast.mp4
+    notify-send -i none -t 2000 "RECORDER" "converted to mp4"
+else
+    notify-send -i none -t 1000 "RECORDER" "started..."
+    recordmydesktop -o /tmp/temp_record.ogv --no-sound &
+    echo $! > /tmp/recorder.pid
+fi

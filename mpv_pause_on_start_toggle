@@ -1,0 +1,11 @@
+#!/bin/bash
+
+tmp_file=/tmp/mpv_pause_toggle
+
+if [[ ! -f $tmp_file ]]; then
+    touch $tmp_file
+    notify-send -t 1500 -i ~/.scripts/resources/pause.png "MPV" "videos will pause on start"
+else
+    rm $tmp_file
+    notify-send -t 1500 -i ~/.scripts/resources/play.png "MPV" "videos will play after spawning"
+fi

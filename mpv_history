@@ -1,0 +1,66 @@
+#!/bin/bash
+
+HISTORY="/home/infiniter/.local/share/qutebrowser/mpv_history"
+
+if [[ $1 == '--clear' ]]; then
+    echo -n "" > $HISTORY
+    notify-send -u critical -t 1500 "MPV history" "ARE YOU SURE??? uncomment this line in mpv_history script"
+    exit 0
+fi
+
+if [[ $(cat $HISTORY | wc -l) -eq 0 ]]; then
+    notify-send -t 1500 "MPV history" "Empty"
+    exit 0
+fi
+
+sed -i "/^(/d" $HISTORY
+
+if [[ $1 == '--clipboard' ]] || [[ $1 == '--qutebrowser' ]]; then
+    type=$(echo $1 | tr -d '-')
+    chosen=$(tac $HISTORY | rofi -dmenu -i -p "MPV history - $type")
+else
+    mesg=$(echo -e "MPV: Enter - Clipboard: Alt+1 - Qutebrowser: Alt+2 - Chrome: Alt+3" | column -s '-' -t)
+    chosen=$(tac $HISTORY | sed 's/\s-\sYouTube(.*//' | sed 's/([^)]*)$//'| rofi -dmenu -mesg "$mesg" -i -p 'MPV history')
+    signal=$?
+    if [[ $chosen == '' ]]; then
+        exit 1
+    fi
+    chosen=$(cat $HISTORY | grep "$chosen" | head -n 1)
+
+    echo $chosen >> $HISTORY
+fi
+
+if [[ $chosen == '' ]]; then
+    exit 1
+else
+    url=$(echo $chosen | awk -F "(" '{print $NF}' | sed 's/.$//')
+
+
+    if [[ $1 == '--clipboard' ]]; then
+        echo $url | xclip -selection clipboard
+        notify-send -i 'none' "Clipboard content" "$url"
+    elif [[ $1 == '--qutebrowser' ]]; then
+        qutebrowser $url
+    else
+        # if ran without arguments, signals can decide behavior
+        if [[ $signal -eq 10 ]]; then
+            echo $url | xclip -selection clipboard
+            notify-send -i 'none' "Clipboard content" "$url"
+        elif [[ $signal -eq 11 ]]; then
+            qutebrowser $url
+        elif [[ $signal -eq 12 ]]; then
+            chromium "$url"
+        else
+            if [[ $(echo $url | sed '/.*\(twitch\.tv\).*/d' | wc -l) -eq 0 ]]; then
+                mpv $url
+                if [[ $? -gt 0 ]]; then
+                    notify-send -i 'none' -t 2000 "Twitch" "Could not play stream"
+                fi
+            else
+                # youtube-viewer --no-interactive --player=mpv --resolution=720p "$url"
+                mpv $url
+            fi
+        fi
+    fi
+fi
+uniquer $HISTORY

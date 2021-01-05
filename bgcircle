@@ -1,0 +1,33 @@
+#!/bin/bash
+
+pscircle --background-color=0b0b0b\
+    --link-color-min=304bcc\
+    --link-color-max=900\
+    --dot-color-min=19a85b\
+    --dot-color-max=c22330\
+    --tree-font-color=b2d3d9\
+    --toplists-font-color=444\
+    --toplists-pid-font-color=777\
+    --toplists-bar-background=999\
+    --toplists-bar-color=ddbf54\
+    --max-children=25\
+    --root-pid=1\
+    --collapse-threads=true\
+    --tree-center=-880:400\
+    --tree-rotate=true\
+    --tree-rotation-angle=14.19\
+    --cpulist-center=550:200\
+    --memlist-center=550:400\
+    --toplists-bar-color=c22330\
+    --output=/tmp/background_pscircle.png\
+    --tree-radius-increment=280\
+    --tree-sector-angle=2\
+    --tree-font-size=18
+
+bg=~/Pictures/Wallpapers/final_fantasy.jpg
+[[ $1 != "" ]] && bg=$1
+composite -dissolve 90 -gravity Center /tmp/background_pscircle.png $bg -alpha Set /tmp/background_pscircle_result.png
+
+convert  /tmp/background_pscircle_result.png  ~/Pictures/circle_background.png -geometry +70+835 -composite /tmp/background_pscircle_result.png
+
+feh --bg-fill /tmp/background_pscircle_result.png
