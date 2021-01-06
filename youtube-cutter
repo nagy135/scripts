@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[ $# -ne 1 ] && echo "you need to url argument" && exit 1
+[ $# -ne 1 ] && echo "you need to pass url as 1st argument" && exit 1
 url=$1
 
 tmp_name=/tmp/video-to-cut.mp4
