@@ -10,7 +10,7 @@ elif [[ $1 == 'create' ]]; then
     chosen=$(tmux ls | awk -F: '{print $1}' | rofi -theme input.rasi -dmenu -i -p 'Create tmux session')
     if [[ ! -z $chosen ]]; then
         notify-send -i $ICON -t 2000 "Created" "$chosen"
-        tmux new-session -s $chosen
+        tmux new-session -d -s $chosen
     fi
     exit 0
 elif [[ $1 == "list" ]]; then
