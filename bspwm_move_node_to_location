@@ -1,0 +1,32 @@
+#!/bin/bash
+
+focused_workspace=$(bspc query -D -d focused --names)
+
+monitor_offset=0
+[ $focused_workspace -ge 5 ] && monitor_offset=$((offset+1920))
+[ $focused_workspace -ge 9 ] && monitor_offset=$((offset+1920))
+
+case $1 in
+    'left_bottom')
+        bspc node -t floating; xdo resize -w 500 -h 300; xdo move -x $((monitor_offset+10)) -y 760
+        ;;
+    'right_bottom')
+        bspc node -t floating; xdo resize -w 500 -h 300; xdo move -x $((monitor_offset+1400)) -y 760
+        ;;
+    'left_top')
+        bspc node -t floating; xdo resize -w 500 -h 300; xdo move -x $((monitor_offset+10)) -y 40
+        ;;
+    'right_top')
+        bspc node -t floating; xdo resize -w 500 -h 300; xdo move -x $((monitor_offset+1400)) -y 40
+        ;;
+    'middle_big')
+        bspc node -t floating; xdo resize -w 1440 -h 810; xdo move -x $((monitor_offset+240)) -y 135
+        ;;
+    'middle_small')
+        bspc node -t floating; xdo resize -w 960 -h 540; xdo move -x $((monitor_offset+480)) -y 270
+        ;;
+    *)
+        echo "undefined argument"
+        exit 1
+        ;;
+esac
