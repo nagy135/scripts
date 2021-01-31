@@ -16,7 +16,12 @@ elif [[ $1 == 'create' ]]; then
 elif [[ $1 == "list" ]]; then
     pid=$(xdotool search --classname toggle_tmux getwindowpid)
     chosen=$(tmux ls | awk -F: '{print $1}' | rofi -theme "~/.config/rofi/tmux.rasi" -dmenu -i -p 'Switch tmux session')
-    tmux switch-client -t "$chosen"
+    [[ -z $chosen ]] && exit 0
+    if [[ $pid != '' ]]; then
+        tmux switch-client -t "$chosen"
+    else
+        alacritty --class toggle_tmux -e tmux -u attach -t "$chosen" &> /dev/null &
+    fi
     exit 0
 else
     pid=$(xdotool search --classname toggle_tmux getwindowpid)
