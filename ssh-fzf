@@ -1,0 +1,9 @@
+#!/bin/bash
+
+declare -A conn_pairs
+
+conn_pairs["my_ssh1"]="infiniter@99.99.99.99"
+conn_pairs["my_ssh2"]="infiniter@77.77.77.77"
+
+choice=$(echo ${!conn_pairs[@]} | tr ' ' '\n' | fzf)
+[ ! -z $choice ] && ssh ${conn_pairs[${choice}]}
