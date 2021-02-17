@@ -2,8 +2,28 @@
 
 declare -A conn_pairs
 
-conn_pairs["my_ssh1"]="infiniter@99.99.99.99"
-conn_pairs["my_ssh2"]="infiniter@77.77.77.77"
+conn_pairs["test"]="vnagy@122.232.23.233"
+
+[[ $1 == 'scp' ]] && SCP=1 || SCP=0
 
 choice=$(echo ${!conn_pairs[@]} | tr ' ' '\n' | fzf)
-[ ! -z $choice ] && ssh ${conn_pairs[${choice}]}
+[ -z $choice ] && echo "nothing chosen...exiting" && exit 1
+
+[ $SCP -eq 0 ] && ssh ${conn_pairs[${choice}]} && exit 0
+
+echo "1 : local => server"
+echo "2 : server => local"
+echo -n "Direction? (write number): "
+read DIRECTION
+echo -n "From: "
+read FROM
+echo -n "To: "
+read TO
+
+[ $DIRECTION -eq 1 ] \
+    && echo "running $FROM ${conn_pairs[${choice}]}:$TO" \
+    || echo "running ${conn_pairs[${choice}]}:$FROM $TO"
+
+[ $DIRECTION -eq 1 ] \
+    && scp $FROM ${conn_pairs[${choice}]}:$TO \
+    || scp ${conn_pairs[${choice}]}:$FROM $TO
