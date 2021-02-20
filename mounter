@@ -1,0 +1,13 @@
+#!/bin/bash
+
+unmounted_partitions=$(lsblk --noheadings --raw | awk '$2~/[[:digit:]]:[^0]/ && $7==""')
+
+device=$(echo "$unmounted_partitions" | sed 's/\([a-z0-9]*\).*/\1/' | rofi -theme "/home/infiniter/.config/rofi/tmux.rasi" -dmenu -i -p 'Select partition to mount')
+[[ -z $device ]] && exit 0
+
+echo $device
+mount_unmount=$(echo -e "mount\nunmount" | rofi -theme "/home/infiniter/.config/rofi/tmux.rasi" -dmenu -i -p 'Mount or Unmount?')
+
+mkdir /mnt/$device
+
+[[ $mount_unmount == 'mount' ]] && mount /dev/$device /mnt/$device
