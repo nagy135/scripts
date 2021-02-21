@@ -1,8 +1,14 @@
 #!/bin/bash
 
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
 LSBLK_STREAM=$(lsblk --noheadings --raw)
 
 mount_unmount=$(echo -e "mount\nunmount" | rofi -theme "/home/infiniter/.config/rofi/tmux.rasi" -dmenu -i -p 'Mount or Unmount?')
+[[ -z $mount_unmount ]] && echo "nothing selected, exiting..." && exit 0
+
 DIRECTION=0
 [[ $mount_unmount == 'mount' ]] && DIRECTION=1
 
@@ -10,14 +16,25 @@ DIRECTION=0
     && PARTITIONS=$(echo "$LSBLK_STREAM" | awk '$2~/[[:digit:]]:[^0]/ && $7==""') \
     || PARTITIONS=$(echo "$LSBLK_STREAM" | awk '$2~/[[:digit:]]:[^0]/ && $7!=""')
 
-[ $DIRECTION -eq 1 ] \
-    && DEVICE=$(echo -e "$PARTITIONS" | awk '{print $1 " - " $4}' | rofi -theme "/home/infiniter/.config/rofi/tmux.rasi" -dmenu -i -p 'Select partition') \
-    || DEVICE=$(echo -e "$PARTITIONS" | awk '{print $1 " - " $4 " - " $7}' | rofi -theme "/home/infiniter/.config/rofi/tmux.rasi" -dmenu -i -p 'Select partition')
+if [ $DIRECTION -eq 1 ]
+then
+    DEVICE=$(echo -e "$PARTITIONS" | awk '{print $1 " - " $4}' | rofi -theme "/home/infiniter/.config/rofi/tmux.rasi" -dmenu -i -p 'Select partition to mount')
+else
+    DEVICE=$(echo -e "$PARTITIONS" | awk '{print $1 " - " $4 " - " $7}' | rofi -theme "/home/infiniter/.config/rofi/tmux.rasi" -dmenu -i -p 'Select partition to unmount')
+fi
 
-# [[ -z $DEVICE ]] && exit 0
+[[ -z $DEVICE ]] && exit 0
+DEVICE=$(echo $DEVICE | awk '{print $1}')
 
-# echo $DEVICE
-
-# mkdir /mnt/$DEVICE
-
-# mount /dev/$DEVICE /mnt/$DEVICE || unmount /dev/$DEVICE
+if [ $DIRECTION -eq 1 ]
+then
+    mkdir /mnt/$DEVICE
+    mount /dev/$DEVICE /mnt/$DEVICE
+    cd /mnt/$DEVICE
+    echo -e "Device ${YELLOW}/dev/$DEVICE${NC} mounted to ${YELLOW}/mnt/$DEVICE${NC} successfully"
+    ls
+else
+    umount /mnt/$DEVICE
+    echo -e "Device ${YELLOW}/dev/$DEVICE${NC} unmounted from ${YELLOW}/mnt/$DEVICE${NC} successfully"
+    rm -rf /mnt/$DEVICE
+fi
