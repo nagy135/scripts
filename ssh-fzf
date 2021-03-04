@@ -9,7 +9,12 @@ conn_pairs["test"]="vnagy@122.232.23.233"
 choice=$(echo ${!conn_pairs[@]} | tr ' ' '\n' | fzf)
 [ -z $choice ] && echo "nothing chosen...exiting" && exit 1
 
-[ $SCP -eq 0 ] && ssh ${conn_pairs[${choice}]} && exit 0
+if [ $SCP -eq 0 ]; then
+    ssh ${conn_pairs[${choice}]}
+    exit 0
+fi
+
+# else scp transfer
 
 echo "1 : local => server"
 echo "2 : server => local"
@@ -25,5 +30,5 @@ read TO
     || echo "running ${conn_pairs[${choice}]}:$FROM $TO"
 
 [ $DIRECTION -eq 1 ] \
-    && scp $FROM ${conn_pairs[${choice}]}:$TO \
-    || scp ${conn_pairs[${choice}]}:$FROM $TO
+    && scp -r $FROM ${conn_pairs[${choice}]}:$TO \
+    || scp -r ${conn_pairs[${choice}]}:$FROM $TO
