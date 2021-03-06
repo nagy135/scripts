@@ -9,3 +9,6 @@ if [[ -f $TMP_TAB ]]; then
     name=$(rofi -theme input.rasi -dmenu -i -p 'Name this tab image')
     [[ ! -z $name ]] && mv $TMP_TAB $DIRECTORY/$name.png && notify-send -t 2000 -i none "TABBER" "tab saved as $DIRECTORY/$name.png"
 fi
+
+# slop=$(slop -f "%x %y %w %h %g %i") || exit 1
+# read -r X Y W H G ID < <(echo $slop)
