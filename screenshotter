@@ -3,7 +3,13 @@
 if [[ $1 == '-focused' ]]; then
     scrot --focused ~/Pictures/Screenshots/temporary_screen.png
 elif [[ $1 == '-zone' ]]; then
-    maim -u -s ~/Pictures/Screenshots/temporary_screen.png
+    if ! command -v convert &> /dev/null
+    then
+        maim -u -s ~/Pictures/Screenshots/temporary_screen.png
+    else
+        # add fancy dropdown shadow if imagemagick installed
+        maim -u -s | convert - \( +clone -background black -shadow 80x3+5+5 \) +swap -background none -layers merge +repage ~/Pictures/Screenshots/temporary_screen.png
+    fi
 elif [[ $1 == '-save' ]]; then
     maim ~/screenshot_$(date '+%Y-%m-%d_%H:%M').png
 else
