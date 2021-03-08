@@ -33,7 +33,7 @@ if [[ $1 == "process" ]]; then
     if [[ ${#array[@]} -gt 0 ]]; then
         convert -append ${array[@]} $DIRECTORY/$subdirectory/pages/output-$page.png
     fi
-    # rm $MULTIPLE_DATA
+    rm $MULTIPLE_DATA
 elif [[ $1 == "grab" ]]; then
     [ ! -f $MULTIPLE_DATA ] && notify-send "Tabber" "set multiple data first!" && exit 1
     geometry=$(cat $MULTIPLE_DATA | sed -n '1p')
