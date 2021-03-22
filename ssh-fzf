@@ -26,8 +26,8 @@ echo -n "To: "
 read TO
 
 [ $DIRECTION -eq 1 ] \
-    && echo "running $FROM ${conn_pairs[${choice}]}:$TO" \
-    || echo "running ${conn_pairs[${choice}]}:$FROM $TO"
+    && echo "running scp -r $FROM ${conn_pairs[${choice}]}:$TO" \
+    || echo "running scp -r ${conn_pairs[${choice}]}:$FROM $TO"
 
 [ $DIRECTION -eq 1 ] \
     && scp -r $FROM ${conn_pairs[${choice}]}:$TO \
