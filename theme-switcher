@@ -25,3 +25,7 @@ sed -i "s/triad-background=.*/triad-background=${triad_background}/" $POLYBAR_CO
 sed -i "s/triad-accent=.*/triad-accent=${triad_accent}/" $POLYBAR_CONFIG
 sed -i "s/triad-accent2=.*/triad-accent2=${triad_accent2}/" $POLYBAR_CONFIG
 
+wallpaper=$(cat $THEMES/$theme | sed -n '16p')
+echo $wallpaper
+cp $wallpaper ~/Pictures/current_wallpaper
+feh --bg-fill ~/Pictures/current_wallpaper
