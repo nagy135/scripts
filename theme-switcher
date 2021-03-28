@@ -4,7 +4,7 @@ POLYBAR_CONFIG=~/.config/polybar/config
 THEMES=~/.scripts/resources/themes
 
 
-theme=$(ls -1 $THEMES | rofi -dmenu -i -p "pick theme")
+theme=$(ls -1 $THEMES | rofi -dmenu -theme "~/.config/rofi/small_selection.rasi" -i -p "pick theme")
 [ -z $theme ] && exit
 
 main_color_foreground=$(cat $THEMES/$theme | sed -n '2p')
