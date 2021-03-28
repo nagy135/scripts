@@ -1,0 +1,18 @@
+#!/bin/sh
+
+POLYBAR_CONFIG=~/.config/polybar/config
+THEMES=~/.scripts/resources/themes
+
+
+theme=$(ls -1 $THEMES | rofi -dmenu -i -p "pick theme")
+[ -z $theme ] && exit
+
+main_color_foreground=$(cat $THEMES/$theme | sed -n '2p')
+main_color_background=$(cat $THEMES/$theme | sed -n '4p')
+secondary_color_foreground=$(cat $THEMES/$theme | sed -n '6p')
+secondary_color_background=$(cat $THEMES/$theme | sed -n '8p')
+
+sed -i "s/main-color-foreground=.*/main-color-foreground=${main_color_foreground}/" $POLYBAR_CONFIG
+sed -i "s/main-color-background=.*/main-color-background=${main_color_background}/" $POLYBAR_CONFIG
+sed -i "s/secondary-color-foreground=.*/secondary-color-foreground=${secondary_color_foreground}/" $POLYBAR_CONFIG
+sed -i "s/secondary-color-background=.*/secondary-color-background=${secondary_color_background}/" $POLYBAR_CONFIG
