@@ -1,0 +1,11 @@
+#!/bin/sh
+
+POLYBAR_CONFIG=~/.config/polybar/config
+THEMES=~/.scripts/resources/themes
+
+
+theme=$(ls -1 $THEMES | rofi -dmenu -i -p "pick theme")
+[ -z $theme ] && exit
+
+main_color=$(cat $THEMES/$theme | sed -n '1p')
+echo $main_color
