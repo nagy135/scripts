@@ -16,3 +16,12 @@ sed -i "s/main-color-foreground=.*/main-color-foreground=${main_color_foreground
 sed -i "s/main-color-background=.*/main-color-background=${main_color_background}/" $POLYBAR_CONFIG
 sed -i "s/secondary-color-foreground=.*/secondary-color-foreground=${secondary_color_foreground}/" $POLYBAR_CONFIG
 sed -i "s/secondary-color-background=.*/secondary-color-background=${secondary_color_background}/" $POLYBAR_CONFIG
+
+triad_background=$(cat $THEMES/$theme | sed -n '10p')
+triad_accent=$(cat $THEMES/$theme | sed -n '12p')
+triad_accent2=$(cat $THEMES/$theme | sed -n '14p')
+
+sed -i "s/triad-background=.*/triad-background=${triad_background}/" $POLYBAR_CONFIG
+sed -i "s/triad-accent=.*/triad-accent=${triad_accent}/" $POLYBAR_CONFIG
+sed -i "s/triad-accent2=.*/triad-accent2=${triad_accent2}/" $POLYBAR_CONFIG
+
