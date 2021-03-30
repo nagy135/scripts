@@ -1,31 +1,42 @@
 #!/bin/sh
 
 POLYBAR_CONFIG=~/.config/polybar/config
+BSPWM_CONFIG=~/.config/bspwm/bspwmrc
 THEMES=~/.scripts/resources/themes
-
 
 theme=$(ls -1 $THEMES | rofi -dmenu -theme "~/.config/rofi/small_selection.rasi" -i -p "pick theme")
 [ -z $theme ] && exit
 
+# colors from theme {{{
 main_color_foreground=$(cat $THEMES/$theme | sed -n '2p')
 main_color_background=$(cat $THEMES/$theme | sed -n '4p')
 secondary_color_foreground=$(cat $THEMES/$theme | sed -n '6p')
 secondary_color_background=$(cat $THEMES/$theme | sed -n '8p')
 
+triad_background=$(cat $THEMES/$theme | sed -n '10p')
+triad_accent=$(cat $THEMES/$theme | sed -n '12p')
+triad_accent2=$(cat $THEMES/$theme | sed -n '14p')
+# }}}
+
+# polybar {{{
 sed -i "s/main-color-foreground=.*/main-color-foreground=${main_color_foreground}/" $POLYBAR_CONFIG
 sed -i "s/main-color-background=.*/main-color-background=${main_color_background}/" $POLYBAR_CONFIG
 sed -i "s/secondary-color-foreground=.*/secondary-color-foreground=${secondary_color_foreground}/" $POLYBAR_CONFIG
 sed -i "s/secondary-color-background=.*/secondary-color-background=${secondary_color_background}/" $POLYBAR_CONFIG
 
-triad_background=$(cat $THEMES/$theme | sed -n '10p')
-triad_accent=$(cat $THEMES/$theme | sed -n '12p')
-triad_accent2=$(cat $THEMES/$theme | sed -n '14p')
-
 sed -i "s/triad-background=.*/triad-background=${triad_background}/" $POLYBAR_CONFIG
 sed -i "s/triad-accent=.*/triad-accent=${triad_accent}/" $POLYBAR_CONFIG
 sed -i "s/triad-accent2=.*/triad-accent2=${triad_accent2}/" $POLYBAR_CONFIG
+# }}}
 
+# wallpaper {{{
 wallpaper=$(cat $THEMES/$theme | sed -n '16p')
 echo $wallpaper
 cp $wallpaper ~/Pictures/current_wallpaper
 feh --bg-fill ~/Pictures/current_wallpaper
+# }}}
+
+# bspwm {{{
+bspc config focused_border_color "${triad_accent}"
+sed -i "s/bspc config focused_border_color.*/bspc config focused_border_color \"${triad_accent}\"/" $BSPWM_CONFIG
+# }}}
