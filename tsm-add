@@ -15,3 +15,5 @@ else
     echo "Turning transmission-daemon ON...run again"
 fi
 torrent_notifier &
+
+transmission-remote -t all -s
