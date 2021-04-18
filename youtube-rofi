@@ -3,4 +3,4 @@
 # Script to search for youtube videos
 # as well as saving them in MPV_HISTORY list
 
-
+youtube-dl -j "ytsearch5:josho stephan" | jq '.fulltitle, .webpage_url' | sed 'N;s/\n/ /'
