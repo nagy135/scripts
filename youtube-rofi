@@ -3,4 +3,10 @@
 # Script to search for youtube videos
 # as well as saving them in MPV_HISTORY list
 
-youtube-dl -j "ytsearch5:josho stephan" | jq '.fulltitle, .webpage_url' | sed 'N;s/\n/ /'
+QUERY="$@"
+QUERY=$(rofi -dmenu -i -p "Search query" -theme input.rasi)
+
+[[ -z "$QUERY" ]] && exit 0
+
+results=$(youtube-dl -j "ytsearch5:$QUERY" | jq '.fulltitle, .webpage_url' | sed 'N;s/\n/ /')
+echo "$results" | rofi -dmenu -i -p "Choose video" -theme tmux.rasi
