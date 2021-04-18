@@ -9,4 +9,4 @@ QUERY=$(rofi -dmenu -i -p "Search query" -theme input.rasi)
 [[ -z "$QUERY" ]] && exit 0
 
 results=$(youtube-dl -j "ytsearch5:$QUERY" | jq '.fulltitle, .webpage_url' | sed 'N;s/\n/ /')
-echo "$results" | rofi -dmenu -i -p "Choose video" -theme tmux.rasi
+echo "$results" | sed 's/^.// ; s/" ".*//' | rofi -dmenu -i -p "Choose video" -theme tmux.rasi
