@@ -3,12 +3,22 @@
 # Script to search for youtube videos
 # as well as saving them in MPV_HISTORY list
 
+MAX=5
+
+if [[ $1 == "-m" ]]; then
+    new_max=$(rofi -dmenu -i -p "How many results" -theme input.rasi)
+    if [[ ! -z $new_max ]]; then
+        MAX=$new_max
+    fi
+    shift
+fi
+
 QUERY="$@"
 QUERY=$(rofi -dmenu -i -p "Search query" -theme input.rasi)
 
 [[ -z "$QUERY" ]] && exit 0
 
-results=$(youtube-dl -j "ytsearch5:$QUERY" | jq '.fulltitle, .webpage_url' | sed 'N;s/\n/ /')
+results=$(youtube-dl -j "ytsearch$MAX:$QUERY" | jq '.fulltitle, .webpage_url' | sed 'N;s/\n/ /')
 chosen=$(echo "$results" | sed 's/^.// ; s/" ".*//' | rofi -dmenu -i -p "Choose video" -theme tmux.rasi)
 
 [[ -z $chosen ]] && exit 0
