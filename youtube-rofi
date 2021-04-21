@@ -39,4 +39,6 @@ notify_name $url &
 
 [[ -f $MPV_HISTORY ]] && echo "$chosen($url)" >> $MPV_HISTORY
 
+[[ -f $ICON_FILE ]] && rm $ICON_FILE
+
 mpv "$url"
