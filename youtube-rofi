@@ -37,6 +37,6 @@ url=$(echo "$results" | grep "$chosen" | sed 's/^"[^"]*" "\([^"]*\)"/\1/')
 
 notify_name $url &
 
-mpv "$url"
-
 [[ -f $MPV_HISTORY ]] && echo "$chosen($url)" >> $MPV_HISTORY
+
+mpv "$url"
