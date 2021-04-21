@@ -5,6 +5,7 @@
 
 MAX=5
 
+MPV_HISTORY=~/.local/share/qutebrowser/mpv_history
 if [[ $1 == "-m" ]]; then
     new_max=$(rofi -dmenu -i -p "How many results" -theme input.rasi)
     if [[ ! -z $new_max ]]; then
@@ -27,4 +28,4 @@ url=$(echo "$results" | grep "$chosen" | sed 's/^"[^"]*" "\([^"]*\)"/\1/')
 
 mpv "$url"
 
-[[ -f ~/.local/share/qutebrowser/mpv_history ]] && echo "$chosen($url)" >> ~/.local/share/qutebrowser/mpv_history
+[[ -f $MPV_HISTORY ]] && echo "$chosen($url)" >> $MPV_HISTORY
