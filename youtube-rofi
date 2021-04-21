@@ -12,7 +12,7 @@ notify_name(){
     title=$(youtube-dl -e "$1")
     id=$(echo "$1" | sed 's/^[^=]*=//')
     wget -cq "https://i3.ytimg.com/vi/$id/hqdefault.jpg" -O $ICON_FILE
-    notify-send -i $ICON_FILE "$title"
+    notify-send -t 2000 -i $ICON_FILE "$title"
 }
 
 if [[ $1 == "-m" ]]; then
