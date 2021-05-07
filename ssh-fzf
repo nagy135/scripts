@@ -16,11 +16,18 @@ colorize(){
 }
 
 [[ $1 == 'scp' ]] && SCP=1 || SCP=0
+[[ $1 == 'clip' ]] && CLIP=1 || CLIP=0
 
 choice=$(echo ${!conn_pairs[@]} | tr ' ' '\n' | fzf)
 [ -z $choice ] && echo "nothing chosen...exiting" && exit 1
 
 colorized=$(colorize ${conn_pairs[${choice}]})
+
+if [ $CLIP -eq 1 ]; then
+    echo -n ${conn_pairs[${choice}]} | xclip -sel clipboard
+    exit 0
+fi
+
 if [ $SCP -eq 0 ]; then
     echo "${GREEN}running${END} ${BLUE}ssh${END} ${colorized}${END}"
     ssh ${conn_pairs[${choice}]}
