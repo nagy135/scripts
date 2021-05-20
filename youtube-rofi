@@ -3,10 +3,42 @@
 # Script to search for youtube videos
 # as well as saving them in MPV_HISTORY list
 
+MAX=5
+
+ICON_FILE=/tmp/youtube-rofi-icon.jpg
+MPV_HISTORY=~/.local/share/qutebrowser/mpv_history
+
+notify_name(){
+    title=$(youtube-dl -e "$1")
+    id=$(echo "$1" | sed 's/^[^=]*=//')
+    wget -cq "https://i3.ytimg.com/vi/$id/hqdefault.jpg" -O $ICON_FILE
+    notify-send -t 2000 -i $ICON_FILE "$title"
+}
+
+if [[ $1 == "-m" ]]; then
+    new_max=$(rofi -dmenu -i -p "How many results" -theme input.rasi)
+    if [[ ! -z $new_max ]]; then
+        MAX=$new_max
+    fi
+    shift
+fi
+
 QUERY="$@"
 QUERY=$(rofi -dmenu -i -p "Search query" -theme input.rasi)
 
 [[ -z "$QUERY" ]] && exit 0
 
-results=$(youtube-dl -j "ytsearch5:$QUERY" | jq '.fulltitle, .webpage_url' | sed 'N;s/\n/ /')
-echo "$results" | sed 's/^.// ; s/" ".*//' | rofi -dmenu -i -p "Choose video" -theme tmux.rasi
+results=$(youtube-dl -j "ytsearch$MAX:$QUERY" | jq '.fulltitle, .webpage_url' | sed 'N;s/\n/ /')
+chosen=$(echo "$results" | sed 's/^.// ; s/" ".*//' | rofi -dmenu -i -p "Choose video" -theme tmux.rasi)
+
+[[ -z $chosen ]] && exit 0
+
+url=$(echo "$results" | grep "$chosen" | sed 's/^"[^"]*" "\([^"]*\)"/\1/')
+
+notify_name $url &
+
+[[ -f $MPV_HISTORY ]] && echo "$chosen($url)" >> $MPV_HISTORY
+
+[[ -f $ICON_FILE ]] && rm $ICON_FILE
+
+mpv "$url"
