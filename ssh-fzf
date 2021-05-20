@@ -8,12 +8,19 @@ END=$'\e[0m'
 
 declare -A conn_pairs
 
-conn_pairs["biologia"]="root@78.47.31.136"
-
-
 colorize(){
     echo "$1${END}" | sed "s/^/${RED}/ ; s/@/${END}@${YELLOW}/"
 }
+conn_pairs["biologia"]="root@78.47.31.136"
+conn_pairs["swissfunds_dev"]="vnagy@49.12.100.180"
+conn_pairs["swissfunds_prod"]="svycarskapujcka-new@217.16.184.94"
+conn_pairs["og_dev"]="vnagy@142.93.38.79"
+conn_pairs["og_prod"]="vnagy@206.189.116.148"
+conn_pairs["dev"]="vnagy@157.230.108.64"
+conn_pairs["caresee"]="vnagy@165.22.85.171"
+conn_pairs["wishmaker"]="vnagy@116.203.48.101"
+conn_pairs["goldguard_dev"]="vnagy@goldguard.bywazzupa.com"
+conn_pairs["goldguard_prod"]="ubuntu@35.158.187.52"
 
 [[ $1 == 'scp' ]] && SCP=1 || SCP=0
 
