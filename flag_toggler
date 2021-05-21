@@ -1,5 +1,10 @@
 #!/bin/bash
 
+MULTIMON=0
+[[ $1 == "-m" ]] \
+    && MULTIMON=1 \
+    && shift
+
 [[ $1 == "" ]] && echo "No argument" && exit 1
 
 case "$1" in
@@ -18,8 +23,11 @@ case "$1" in
 esac
 
 bspc subscribe -c 1 | while read line; do
-    line=$(echo $line | sed 's/^.*G\(.*\)/\1/g')
-    echo $line
+    if [[ $MULTIMON -eq 1 ]]; then
+        line=$(echo $line | stdbuf -o0 awk -F: '{print $8 $16 $23}' | sed  's/G//g')
+    else
+        line=$(echo $line | sed 's/^.*G\(.*\)/\1/g')
+    fi
     sticky=0
     marked=0
     private=0
