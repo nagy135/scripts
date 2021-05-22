@@ -1,0 +1,5 @@
+#!/bin/bash
+
+desktop=$(($(bspc query -D -d --names) - 1)) # -1 since wmctrl counts from 0
+windows=$(wmctrl -l -G -x)
+echo "windows" "$windows"
