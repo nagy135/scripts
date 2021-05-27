@@ -2,7 +2,15 @@
 
 desktop=$(($(bspc query -D -d --names) - 1)) # -1 since wmctrl counts from 0
 targets=$(wmctrl -l -G -x | sed -n "/[^\s]*\s*$desktop/p" | sed 's/\([0-9a-z]*\).*/\1/')
-echo "targets" "$targets"
+echo "$targets"
+
+test_target=$(echo "$targets" | sed '1q')
+# 1: window
+# 2: desktop
+move_window_to_desktop $test_target 5
+move_window_to_desktop(){
+    wmctrl -l -G | grep $1
+}
 
 # 0x02a00002  1 20   88   1900 1026 gl.mpv                      N/A MY XIN ZHAO IS WAY TOO CLEAN!!!! - SRO Road to Challenger - mpv
 
