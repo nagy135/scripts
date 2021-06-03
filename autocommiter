@@ -1,16 +1,28 @@
 #!/bin/bash
 
+# Automatically commits files in folders
+# if they match folder
+# or if they do not match it
+
+# Usage:
+#   put in crontab of project root owner:
+#       */5 * * * * /usr/bin/autocommiter
+
+# path to project roots
 declare -a PROJECTS=(
     "/home/infiniter/Code/scripts"
     "/home/infiniter/Clones/sort-rs"
 )
 
+# only these folders will be commited
 declare -a FOLDERS_TO_CHECK=(
     "./storage/cache"
     "resources"
     "./src"
 )
 
+# when -i option is passed:
+# everything except these folders will be commited
 declare -a FOLDERS_TO_IGNORE=(
     "resources"
     "src"
@@ -21,6 +33,7 @@ declare -a FOLDERS_TO_IGNORE=(
 IGNORE=0
 [[ $1 == "-i" ]] && IGNORE=1
 
+# iterate over projects
 for (( i=0; i<${#PROJECTS[@]}; i++ ));
 do
     root_path=${PROJECTS[$i]}
@@ -28,15 +41,22 @@ do
 
     cd $root_path
     changes=0
+    # iterate over changes
     while read -r line; do
+
+        # clean git markers
         file=$(echo $line | sed "s/\s*[^\s]*\s//")
+        
+        # decide target
         [[ $IGNORE -eq 1 ]] \
             && FOLDERS=("${FOLDERS_TO_IGNORE[@]}") \
             || FOLDERS=("${FOLDERS_TO_CHECK[@]}")
 
         FOUND=0
+        # iterate over target folders
         for (( f=0; f<${#FOLDERS[@]}; f++ ));
         do
+            # trim leading ./
             folder=$(echo ${FOLDERS[$f]} | sed 's/^\.\///')
 
             if [[ $file == $folder/* ]]; then
@@ -44,6 +64,7 @@ do
             fi
         done
 
+        # stage files
         [[ $IGNORE -eq 1 ]] && [ $FOUND -eq 0 ] \
             && git add $file \
             && $changes++
@@ -53,5 +74,7 @@ do
             && $changes++
 
     done < <(git status -s)
+
     git commit -m 'autocommit $(date +%H:%M)'
+    # git push
 done
