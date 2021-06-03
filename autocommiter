@@ -7,14 +7,19 @@ declare -a PROJECTS=(
 
 declare -a FOLDERS_TO_CHECK=(
     "./storage/cache"
-    "./app"
+    "resources"
+    "./src"
 )
 
 declare -a FOLDERS_TO_IGNORE=(
-    "./public"
+    "resources"
+    "src"
 )
 
 [ ${#PROJECTS[@]} -eq 0 ] && exit
+
+IGNORE=0
+[[ $1 == "-i" ]] && IGNORE=1
 
 for (( i=0; i<${#PROJECTS[@]}; i++ ));
 do
@@ -22,8 +27,31 @@ do
     echo "Checking project: ${root_path}"
 
     cd $root_path
+    changes=0
     while read -r line; do
-        file=$(echo $line | sed "s/^[^\s]*\s//")
-        echo $file
+        file=$(echo $line | sed "s/\s*[^\s]*\s//")
+        [[ $IGNORE -eq 1 ]] \
+            && FOLDERS=("${FOLDERS_TO_IGNORE[@]}") \
+            || FOLDERS=("${FOLDERS_TO_CHECK[@]}")
+
+        FOUND=0
+        for (( f=0; f<${#FOLDERS[@]}; f++ ));
+        do
+            folder=$(echo ${FOLDERS[$f]} | sed 's/^\.\///')
+
+            if [[ $file == $folder/* ]]; then
+                FOUND=1
+            fi
+        done
+
+        [[ $IGNORE -eq 1 ]] && [ $FOUND -eq 0 ] \
+            && git add $file \
+            && $changes++
+
+        [[ $IGNORE -eq 0 ]] && [ $FOUND -eq 1 ] \
+            && git add $file
+            && $changes++
+
     done < <(git status -s)
+    git commit -m 'autocommit $(date +%H:%M)'
 done
