@@ -1,0 +1,29 @@
+#!/bin/bash
+
+declare -a PROJECTS=(
+    "/home/infiniter/Code/scripts"
+    "/home/infiniter/Clones/sort-rs"
+)
+
+declare -a FOLDERS_TO_CHECK=(
+    "./storage/cache"
+    "./app"
+)
+
+declare -a FOLDERS_TO_IGNORE=(
+    "./public"
+)
+
+[ ${#PROJECTS[@]} -eq 0 ] && exit
+
+for (( i=0; i<${#PROJECTS[@]}; i++ ));
+do
+    root_path=${PROJECTS[$i]}
+    echo "Checking project: ${root_path}"
+
+    cd $root_path
+    while read -r line; do
+        file=$(echo $line | sed "s/^[^\s]*\s//")
+        echo $file
+    done < <(git status -s)
+done
