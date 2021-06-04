@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# requires bpm (from bpm-tools) uses sox
+# requires ffpmeg
+
+get_bpm(){
+    sox $1 -t raw -r 44100 -e float -c 1 - | bpm
+}
+
+change_speed(){
+    ffmpeg -i $1 -filter:a "atempo=0.5" "slower_$1"
+}
+
+get_bpm ~/Music/i_ll_see_you_in_my_dreams.mp3
