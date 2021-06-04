@@ -59,9 +59,7 @@ do
             # trim leading ./
             folder=$(echo ${FOLDERS[$f]} | sed 's/^\.\///')
 
-            if [[ $file == $folder/* ]]; then
-                FOUND=1
-            fi
+            [[ $file == $folder/* ]] && FOUND=1
         done
 
         # stage files
@@ -76,5 +74,6 @@ do
     done < <(git status -s)
 
     git commit -m 'autocommit $(date +%H:%M)'
+    # git pull
     # git push
 done
