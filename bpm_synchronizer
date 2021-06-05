@@ -1,14 +1,31 @@
 #!/bin/bash
 
 # requires bpm (from bpm-tools) uses sox
+#   requires (libao libid3tag libmad  opusfile twolame wavpack)
 # requires ffpmeg
 
+# $1 - target song
 get_bpm(){
-    sox $1 -t raw -r 44100 -e float -c 1 - | bpm
+    sox $1 -t raw -r 44100 -e float -c 1 - | bpm 2> /dev/null
 }
 
+# $1 - song to convert
+# $2 - tempo in decimal
 change_speed(){
-    ffmpeg -i $1 -filter:a "atempo=0.5" "slower_$1"
+    original_name=$(basename $1)
+    extension="${original_name##*.}"
+    ffmpeg \
+        -i $1 \
+        -filter:a "atempo=$2" \
+        "/tmp/tttt/${original_name}-changed.${extension}"
 }
 
-get_bpm ~/Music/i_ll_see_you_in_my_dreams.mp3
+target=120
+for song in ~/Music/*
+do
+    bpm=$(get_bpm $song)
+    conversion=$(echo "scale=4;$target/$bpm" | bc)
+    change_speed $song $conversion
+    echo $song $bpm $conversion
+done
+
