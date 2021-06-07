@@ -21,7 +21,8 @@ case $1 in
         ;;
     *)
         echo "${GREEN}running:${END} ${YELLOW}docker-compose ${BLUE}exec${END} ${RED}$choice${END} ${BLUE}bash${END}"
-        docker-compose exec $choice bash
+        docker-compose exec $choice bash \
+            || docker-compose exec $choice sh
         ;;
 esac
 
