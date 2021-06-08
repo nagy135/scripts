@@ -1,14 +1,13 @@
 #!/bin/bash
 
-# if [[ ! $(pidof ncmpcpp) ]]; then
-# if [[ ! $(pidof spotifyd) ]]; then
-#     spotifyd &
-# fi
-if [[ ! $(pidof spotify) ]]; then
-    bspc desktop -f 10
-    spotify
-    # alacritty --class 'ncmpcpp' -e spt &> /dev/null &
-    # alacritty --class 'ncmpcpp' -e ncmpcpp &> /dev/null &
+# TYPE='spt'
+TYPE='spotify'
+DESKTOP=10
+
+if [[ ! $(pidof $TYPE) ]]; then
+    bspc desktop -f $DESKTOP
+    [ $TYPE == 'spt' ] && alacritty -e spt &> /dev/null &
+    [ $TYPE == 'spotify' ] && spotify &
 else
-    bspc desktop -f 10
+    bspc desktop -f $DESKTOP
 fi
