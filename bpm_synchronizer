@@ -5,11 +5,12 @@
 # requires ffpmeg
 
 show_help(){
-    echo "Usage: bpm_synchronizer [-b|--bpm][-s|--song-path]"
+    echo "Usage: bpm_synchronizer [options...]"
     echo ""
     echo "Options:"
-    echo "  -b|--bpm  <number>        target bpm we want song to have (default 120)"
     echo "  -s|--song-path <path>     song on which conversion is performed"
+    echo "  -b|--bpm  <number>        target bpm we want song to have (default 120)"
+    echo "  -o|--output-dir <path>    directory where song will be generated into (default HOME)"
 }
 
 # $1 - target song
