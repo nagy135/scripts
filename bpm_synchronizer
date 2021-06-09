@@ -4,8 +4,13 @@
 #   requires (libao libid3tag libmad  opusfile twolame wavpack)
 # requires ffpmeg
 
-# First argument: TEMPO
-# Second argument: PATH_TO_SONG
+show_help(){
+    echo "Usage: bpm_synchronizer [-b|--bpm][-s|--song-path]"
+    echo ""
+    echo "Options:"
+    echo "  -b|--bpm  <number>        target bpm we want song to have (default 120)"
+    echo "  -s|--song-path <path>     song on which conversion is performed"
+}
 
 # $1 - target song
 get_bpm(){
@@ -16,22 +21,52 @@ get_bpm(){
 # $2 - tempo in decimal
 change_speed(){
     original_name=$(basename $1)
+    name="${original_name%.*}"
     extension="${original_name##*.}"
     ffmpeg \
         -i $1 \
         -filter:a "atempo=$2" \
-        "/tmp/tttt/${original_name}-changed.${extension}"
+        "${OUTPUT_DIR}/${name}-${TARGET_BPM}.${extension}"
 }
 
-[ $# -lt 2 ] \
-    && echo "Pass in tempo and path to song" \
+[ $# -eq 0 ] \
+    && show_help \
+    && exit 0
+
+# parse arguments
+TARGET_BPM=120
+SONG_PATH=""
+OUTPUT_DIR=""
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -b|--bpm)
+            shift
+            TARGET_BPM=$1
+            ;;
+        -s|--song-path)
+            shift
+            SONG_PATH=$1
+            ;;
+        -o|--output-dir)
+            shift
+            OUTPUT_DIR=$1
+            ;;
+    esac
+    shift
+done
+
+[ -z $SONG_PATH ] \
+    && echo "You have to provide path to song (-s)" \
     && exit 1
 
-re='^[0-9]+$'
-! [[ $1 =~ $re ]] && echo "First argument has to be number" && exit 2
+[ -z $OUTPUT_DIR ] \
+    && echo "No output dir provided, defaulting to $HOME" \
+    && OUTPUT_DIR=$HOME
+    
 
-target_bpm=$1
-song=$2
-bpm=$(get_bpm $song)
-conversion=$(echo "scale=4;$target_bpm/$bpm" | bc)
-change_speed $song $conversion
+re='^[0-9]+$'
+! [[ $TARGET_BPM =~ $re ]] && echo "Target bpm has to be number" && exit 2
+
+bpm=$(get_bpm $SONG_PATH)
+conversion=$(echo "scale=4;$TARGET_BPM/$bpm" | bc)
+change_speed $SONG_PATH $conversion
