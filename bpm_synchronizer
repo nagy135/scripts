@@ -4,6 +4,9 @@
 #   requires (libao libid3tag libmad  opusfile twolame wavpack)
 # requires ffpmeg
 
+# First argument: TEMPO
+# Second argument: PATH_TO_SONG
+
 # $1 - target song
 get_bpm(){
     sox $1 -t raw -r 44100 -e float -c 1 - | bpm 2> /dev/null
@@ -20,12 +23,15 @@ change_speed(){
         "/tmp/tttt/${original_name}-changed.${extension}"
 }
 
-target=120
-for song in ~/Music/*
-do
-    bpm=$(get_bpm $song)
-    conversion=$(echo "scale=4;$target/$bpm" | bc)
-    change_speed $song $conversion
-    echo $song $bpm $conversion
-done
+[ $# -lt 2 ] \
+    && echo "Pass in tempo and path to song" \
+    && exit 1
 
+re='^[0-9]+$'
+! [[ $1 =~ $re ]] && echo "First argument has to be number" && exit 2
+
+target_bpm=$1
+song=$2
+bpm=$(get_bpm $song)
+conversion=$(echo "scale=4;$target_bpm/$bpm" | bc)
+change_speed $song $conversion
