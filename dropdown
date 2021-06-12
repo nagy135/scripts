@@ -1,38 +1,30 @@
 #!/bin/bash
 
-type=$1
+TERMINAL=alacritty
+CLASS_FLAG="--class"
+EXECUTE_FLAG="-e"
 
+CLASSNAME=plain_dropdown
+[[ $1 == 'python' ]] && CLASSNAME=python_dropdown
 
-if [[ $type == 'python' ]]; then
-    # python shell dropdown
-    instance=$(xdotool search --classname python_dropdown)
-    if [[ $instance == '' ]]; then
-        #just open it if not running
-        alacritty --class python_dropdown -e python &> /dev/null &
-    else
-        #toggle
-        if [[ $(xprop -id $instance | grep WM_STATE_HIDDEN) != '' ]]; then
-            bspc node $instance -g hidden=off
-            bspc node $instance -d $(bspc query -D -d focused)
-            bspc node $instance -f
-        else
-            bspc node $instance -g hidden=on
-        fi
-    fi
-else
-    # plain terminal dropdown
-    instance=$(xdotool search --classname plain_dropdown)
-    if [[ $instance == '' ]]; then
-        #just open it if not running
-        alacritty --class plain_dropdown &> /dev/null &
-    else
-        #toggle
-        if [[ $(xprop -id $instance | grep WM_STATE_HIDDEN) != '' ]]; then
-            bspc node $instance -g hidden=off
-            bspc node $instance -d $(bspc query -D -d focused)
-            bspc node $instance -f
-        else
-            bspc node $instance -g hidden=on
-        fi
-    fi
-fi
+instance=$(xdotool search --classname $CLASSNAME)
+
+# if not running, just open
+[[ $instance == '' ]] \
+    && [[ $1 == 'python' ]] \
+    && ($TERMINAL $CLASS_FLAG $CLASSNAME $EXECUTE_FLAG python &> /dev/null &) \
+    && exit
+
+[[ $instance == '' ]] \
+    && ($TERMINAL $CLASS_FLAG $CLASSNAME &> /dev/null &) \
+    && exit
+
+# else, toggle shown/hidden
+[[ $(xprop -id $instance | grep WM_STATE_HIDDEN) != '' ]] \
+    && bspc node $instance -g hidden=on \ # hide it
+    && exit
+
+# or show it
+bspc node $instance -g hidden=off
+bspc node $instance -d $(bspc query -D -d focused)
+bspc node $instance -f
