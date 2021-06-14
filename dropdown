@@ -20,11 +20,13 @@ instance=$(xdotool search --classname $CLASSNAME)
     && exit
 
 # else, toggle shown/hidden
-[[ $(xprop -id $instance | grep WM_STATE_HIDDEN) != '' ]] \
-    && bspc node $instance -g hidden=on \ # hide it
+
+# hide
+[[ $(xprop -id $instance | grep WM_STATE_HIDDEN) == '' ]] \
+    && bspc node $instance -g hidden=on \
     && exit
 
-# or show it
+# show
 bspc node $instance -g hidden=off
 bspc node $instance -d $(bspc query -D -d focused)
 bspc node $instance -f
