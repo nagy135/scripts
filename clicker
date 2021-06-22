@@ -15,6 +15,7 @@ elif [[ $1 == --perform ]]; then
         x=$(echo $position | cut -d' ' -f1)
         y=$(echo $position | cut -d' ' -f2)
         xdotool mousemove $x $y click 1
+        sleep 0.1
     done < $PATH_FILE
 else
     echo "unknown command"
