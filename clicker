@@ -11,7 +11,6 @@ elif [[ $1 == --clear ]]; then
     > $PATH_FILE
 elif [[ $1 == --perform ]]; then
     while read position; do
-        echo pos $position
         x=$(echo $position | cut -d' ' -f1)
         y=$(echo $position | cut -d' ' -f2)
         screen=$(echo $position | cut -d' ' -f3)
