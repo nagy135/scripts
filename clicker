@@ -6,7 +6,7 @@ PATH_FILE=/tmp/clicker
 
 if [[ $1 == --record ]]; then
     eval $(xdotool getmouselocation --shell)
-    echo "$X $Y" >> $PATH_FILE
+    echo "$X $Y $SCREEN" >> $PATH_FILE
 elif [[ $1 == --clear ]]; then
     > $PATH_FILE
 elif [[ $1 == --perform ]]; then
@@ -14,7 +14,8 @@ elif [[ $1 == --perform ]]; then
         echo pos $position
         x=$(echo $position | cut -d' ' -f1)
         y=$(echo $position | cut -d' ' -f2)
-        xdotool mousemove $x $y click 1
+        screen=$(echo $position | cut -d' ' -f3)
+        xdotool mousemove --screen $screen $x $y click 1
         sleep 0.1
     done < $PATH_FILE
 else
