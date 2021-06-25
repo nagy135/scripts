@@ -6,7 +6,10 @@ PATH_FILE=/tmp/clicker
 
 if [[ $1 == --record ]]; then
     eval $(xdotool getmouselocation --shell)
-    echo "$X $Y $SCREEN" >> $PATH_FILE
+    [[ $2 == '-r' ]] \
+        && RIGHT="r" \
+        || RIGHT=""
+    echo "$X $Y $SCREEN $RIGHT" >> $PATH_FILE
 elif [[ $1 == --clear ]]; then
     > $PATH_FILE
 elif [[ $1 == --perform ]]; then
