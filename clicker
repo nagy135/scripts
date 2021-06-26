@@ -17,7 +17,12 @@ elif [[ $1 == --perform ]]; then
         x=$(echo $position | cut -d' ' -f1)
         y=$(echo $position | cut -d' ' -f2)
         screen=$(echo $position | cut -d' ' -f3)
-        xdotool mousemove --screen $screen $x $y click 1
+        screen=$(echo $position | cut -d' ' -f3)
+
+        button=1
+        [ $(echo "$position" | sed -n '/r$/p' | wc -l) -ne 0 ] \
+            && button=2
+        xdotool mousemove --screen $screen $x $y click $button
         sleep 0.1
     done < $PATH_FILE
 else
