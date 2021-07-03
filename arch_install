@@ -3,6 +3,15 @@
 # This script will setup everything my clean install of arch linux needs.
 # Configures everything as well as installs all my packages therefore serving
 # as a repository of my used programs.
+
+install_subtube(){
+    cd $CLONES_DIR
+    git clone https://github.com/nagy135/subtube
+    cd subtube
+    echo "Installing subtube..."
+    sudo make install
+}
+
 CLONES_DIR=$HOME/Clones
 DOTS_DIR=$CLONES_DIR/dots
 
@@ -13,6 +22,7 @@ git clone https://github.com/nagy135/dots $DOTS_DIR
 # mine
 git clone https://github.com/nagy135/hackerrank $CLONES_DIR/hackerrank
 git clone https://github.com/nagy135/pomodorust $CLONES_DIR/pomodorust
+install_subtube
 git clone https://github.com/nagy135/sort-rs $CLONES_DIR/sort-rs
 git clone https://github.com/nagy135/rusty-type $CLONES_DIR/rusty-type
 git clone https://github.com/nagy135/utils $CLONES_DIR/utils
