@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# This script will setup everything my clean install of arch linux needs.
+# Configures everything as well as installs all my packages therefore serving
+# as a repository of my used programs.
