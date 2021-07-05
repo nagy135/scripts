@@ -4,6 +4,35 @@
 # Configures everything as well as installs all my packages therefore serving
 # as a repository of my used programs.
 
+########################################
+### AFTER ARCH BASE INSTALL COMPLETE ###
+########################################
+
+# installs {{{
+
+sudo pacman -Syy
+sudo pacman -S \
+	alacritty \
+	git \
+	wget \
+	neofetch \
+	mpv \
+	pavucontrol \
+	pulseaudio \
+	wl-clipboard \
+	qutebrowser
+
+# }}}
+
+# git installs {{{
+
+install_paru(){
+    cd $CLONES_DIR
+	git clone https://aur.archlinux.org/paru.git
+	cd paru
+	makepkg -si
+}
+
 install_subtube(){
     cd $CLONES_DIR
     git clone https://github.com/nagy135/subtube
@@ -31,6 +60,18 @@ git clone https://github.com/nagy135/brain-dumps $CLONES_DIR/brain-dumps
 git clone https://github.com/nagy135/3Dmodels $CLONES_DIR/3Dmodels
 
 # other
+install_paru
 git clone https://github.com/nagy135/torque $CLONES_DIR/torque
 git clone https://github.com/nagy135/wuzz $CLONES_DIR/wuzz
 git clone https://github.com/nagy135/z.lua $CLONES_DIR/z.lua
+
+# }}}
+
+# AUR installs {{{
+
+paru -Syy
+paru google-chrome \
+	lazygit \
+	nerd-fonts-mononoki
+
+# }}}
