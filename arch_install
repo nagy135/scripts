@@ -8,6 +8,20 @@
 ### AFTER ARCH BASE INSTALL COMPLETE ###
 ########################################
 
+# still while root
+useradd -m -g wheel infiniter
+echo "Changing infiniter user password"
+passwd infiniter
+
+echo "Logging in as infiniter"
+su infiniter
+
+mkdir ~/Torrents
+mkdir ~/Documents
+mkdir ~/Downloads
+mkdir ~/Code
+mkdir ~/Clones
+
 # installs {{{
 
 sudo pacman -Syy
@@ -43,8 +57,6 @@ install_subtube(){
 
 CLONES_DIR=$HOME/Clones
 DOTS_DIR=$CLONES_DIR/dots
-
-mkdir -p $CLONES_DIR
 
 git clone https://github.com/nagy135/dots $DOTS_DIR
 
