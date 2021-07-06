@@ -36,7 +36,8 @@ sudo pacman -S \
 	wl-clipboard \
 	zathura \
 	zathura-pdf-mupdf \
-	qutebrowser
+	qutebrowser \
+    youtube-dl
 
 # }}}
 
