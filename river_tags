@@ -1,0 +1,35 @@
+#!/bin/bash
+
+STATE=/tmp/river_tags_state
+[ ! -f $STATE ] && echo $((0 << 0)) > $STATE
+
+current_state=$(cat $STATE)
+
+# make sure value between 255 and 0
+[[ $current_state -le 255 ]] \
+    && [[ $current_state -ge 1 ]] \
+    || echo $((0 << 0)) > $STATE
+current_state=$(cat $STATE)
+
+[[ $# -lt 1 ]] \
+    && echo "No argument passed" \
+    && exit 1 
+
+echo "before"
+echo $(cat $STATE)
+
+echo $(( $(($1 << 0 )) | $current_state)) > $STATE
+
+echo "currently set state"
+echo $(cat $STATE)
+
+# for i in $(seq 1 9)
+# do
+#     # tags=$((1 << ($i - 1)))
+#     # echo $tags
+#     echo $i
+#     seq_bit=$((1 << ($i - 1)))
+#     echo $(($seq_bit | 1)) 
+#     echo "######"
+
+# done
