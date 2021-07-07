@@ -89,6 +89,7 @@ paru google-chrome \
 	lazygit \
 	bemenu-wayland \
 	nerd-fonts-mononoki \
-    river
+    river \
+    htim
 
 # }}}
