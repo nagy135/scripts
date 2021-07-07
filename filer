@@ -4,7 +4,7 @@
 
 mesg=$(echo -e "Open: Enter - Clipboard: Alt+1" | column -s '-' -t)
 
-chosen=$(ls $1 | rofi -dmenu -i -p "Filer" -mesg "$mesg")
+chosen=$(ls $1 | bemenu -l 10 -i -p "Filer")
 signal=$?
 chosen=$(echo "$chosen" | tr -d '\n')
 [[ -z $chosen ]] && notify-send "Filer" "no file selected" && exit 1
@@ -17,11 +17,11 @@ chosen="$1/$chosen"
 case "$chosen" in
     *.jpg | *.png ) 
         echo png
-        sxiv $chosen &
+        sxiv $chosen
         ;;
     *.pdf ) 
         echo pdf
-        zathura $chosen &> /dev/null &
+        zathura $chosen &> /dev/null
         ;;
     *)
         echo last
