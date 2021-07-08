@@ -6,7 +6,7 @@ if [[ $choices == '' ]]; then
 fi
 
 echo "$choices"
-choice=$( echo "$choices" | rofi -dmenu -i -p 'Delete torrent')
+choice=$( echo "$choices" | bemenu -i -p 'Delete torrent')
 if [[ $choice != '' ]]; then
     choice=$(echo $choice | awk '{print $1}')
     transmission-remote -t $choice -r
