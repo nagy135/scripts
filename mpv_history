@@ -17,10 +17,9 @@ sed -i "/^(/d" $HISTORY
 
 if [[ $1 == '--clipboard' ]] || [[ $1 == '--qutebrowser' ]]; then
     type=$(echo $1 | tr -d '-')
-    chosen=$(tac $HISTORY | rofi -dmenu -i -p "MPV history - $type")
+    chosen=$(tac $HISTORY | bemenu -i -p "MPV history - $type")
 else
-    mesg=$(echo -e "MPV: Enter - Clipboard: Alt+1 - Qutebrowser: Alt+2 - Chrome: Alt+3" | column -s '-' -t)
-    chosen=$(tac $HISTORY | sed 's/\s-\sYouTube(.*//' | sed 's/([^)]*)$//'| rofi -dmenu -mesg "$mesg" -i -p 'MPV history')
+    chosen=$(tac $HISTORY | sed 's/\s-\sYouTube(.*//' | sed 's/([^)]*)$//'| bemenu -l 10 -i -p 'MPV history' --tf "#19a85b" --hf "#19a85b")
     signal=$?
     if [[ $chosen == '' ]]; then
         exit 1
