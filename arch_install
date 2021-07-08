@@ -37,7 +37,13 @@ sudo pacman -S \
 	zathura \
 	zathura-pdf-mupdf \
 	qutebrowser \
+    rsync \
+    transmission-cli \
     youtube-dl
+
+# hooks {{{
+  sudo usermod -a -G transmission infiniter
+# }}}
 
 # }}}
 
@@ -90,6 +96,8 @@ paru google-chrome \
 	bemenu-wayland \
 	nerd-fonts-mononoki \
     river \
+    xob \
+    subliminal \
     htim
 
 # }}}
