@@ -1,13 +1,22 @@
 #/bin/bash
 
-REPO_DIR=/tmp/dots
+REPO_DIR=~/Clones/dots
 
 if [[ ! -d $REPO_DIR ]]; then
     git clone https://github.com/nagy135/dots $REPO_DIR
     echo "repository cloned"
 fi
 
-declare -a files=(".vimrc" ".emacs" ".functions" ".aliases" ".zshrc" ".tmux.conf" "Code/scripts" ".config")
+declare -a files=(
+        ".vimrc"
+        ".emacs"
+        ".functions"
+        ".aliases"
+        ".zshrc"
+        ".tmux.conf"
+        ".config"
+)
+
 cd ~
 
 echo "starting backup..."
