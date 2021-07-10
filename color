@@ -1,6 +1,15 @@
 #!/bin/bash
 
-colors=$(cat ~/.local/share/colors)
+declare -A arr
 
-choice=$(echo "$colors" | rofi -dmenu -i -p "Pick color" -theme ~/.config/rofi/tmux.rasi )
-[[ ! -z $choice ]] && echo $choice | grep -oP "(?<=').*(?=')" | tr -d '\n' | xclip -sel clipboard
+  arr['black']='#0b0b0b'
+    arr['red']='#c22330'
+  arr['green']='#19a85b'
+ arr['yellow']='#f9dc2b'
+   arr['blue']='#304bcc'
+arr['magenta']='#d13273'
+   arr['cyan']='#2dc189'
+  arr['white']='#b2d3d9'
+
+choice=$(echo "${!arr[@]}" | tr ' ' '\n' | bemenu --fn 'MesloLGS NF 14' -l 8 -i -p "Pick color")
+[[ ! -z $choice ]] && echo ${arr[$choice]} | tr -d '\n' | wl-copy
