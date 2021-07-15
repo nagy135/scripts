@@ -39,10 +39,13 @@ sudo pacman -S \
 	qutebrowser \
     rsync \
     transmission-cli \
+    network-manager-applet \
+    tmux \
     youtube-dl
 
 # hooks {{{
   sudo usermod -a -G transmission infiniter
+  sudo usermod -a -G video infiniter
 # }}}
 
 # }}}
@@ -98,6 +101,7 @@ paru google-chrome \
     river \
     xob \
     subliminal \
+    spotify-tui \
     htim
 
 # }}}
