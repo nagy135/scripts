@@ -28,8 +28,13 @@ sudo pacman -Syy
 sudo pacman -S \
 	alacritty \
 	git \
+    tree \
+    stow \
+    slurp \
 	wget \
 	neofetch \
+    pamixer \
+    alsa-utils \
 	mpv \
 	pavucontrol \
 	pulseaudio \
