@@ -45,13 +45,16 @@ sudo pacman -S \
 	qutebrowser \
     rsync \
     transmission-cli \
-    network-manager-applet \
+    # network-manager-applet \
+    iwd \
     tmux \
     youtube-dl
 
 # hooks {{{
   sudo usermod -a -G transmission infiniter
   sudo usermod -a -G video infiniter
+
+  sudo systemctl enable iwd.service
 # }}}
 
 # }}}
@@ -107,7 +110,12 @@ paru google-chrome \
     river \
     xob \
     subliminal \
+    networkmanager-iwd \
     spotify-tui \
     htim
 
+# }}}
+
+# AUR hooks {{{
+  sudo systemctl enable NetworkManager.service # iwd compatible version
 # }}}
