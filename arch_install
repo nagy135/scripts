@@ -30,6 +30,7 @@ sudo pacman -S \
 	git \
     tree \
     stow \
+    imagemagick \
     slurp \
 	wget \
 	neofetch \
