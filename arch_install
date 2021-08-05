@@ -48,6 +48,7 @@ sudo pacman -S \
     # network-manager-applet \
     iwd \
     tmux \
+    slop \
     youtube-dl
 
 # hooks {{{
@@ -112,6 +113,7 @@ paru google-chrome \
     subliminal \
     networkmanager-iwd \
     spotify-tui \
+    vidir \
     htim
 
 # }}}
