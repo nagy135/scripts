@@ -7,7 +7,7 @@ MULTIPLE_DATA=/tmp/tabber_multiple_data
 if [[ $1 == "process" ]]; then
     [ ! -f $MULTIPLE_DATA ] && notify-send "Tabber" "set multiple data first!" && exit 1
     subdirectory=$(cat $MULTIPLE_DATA | sed -n '2p')
-    height=$(cat $MULTIPLE_DATA | sed -n '1p' | sed 's/[0-9]*x\([0-9]*\).*/\1/')
+    height=$(cat $MULTIPLE_DATA | sed -n '1p' | sed 's/[^x]*x//')
     per_page=$((1920/$height))
     total=$(ls $DIRECTORY/$subdirectory | wc -l)
 
@@ -40,25 +40,25 @@ elif [[ $1 == "grab" ]]; then
     subdirectory=$(cat $MULTIPLE_DATA | sed -n '2p')
     order=$(ls $DIRECTORY/$subdirectory | wc -l)
     order=$((order+1))
-    maim -g $geometry $DIRECTORY/$subdirectory/$order.png
+    grim -g "$geometry" $DIRECTORY/$subdirectory/$order.png
     notify-send -i 'none' -t 300 "Tabber" "piece captured"
 else
-    choice=$(echo -e "single\nmultiple" | rofi -theme small_selection.rasi -dmenu -i)
+    choice=$(echo -e "single\nmultiple" | bemenu -i)
     [ -z $choice ] && exit 0
 
     if [[ $choice == "single" ]]; then
         maim -s $TMP_TAB
         if [[ -f $TMP_TAB ]]; then
-            name=$(rofi -theme input.rasi -dmenu -i -p 'Name this tab image')
+            name=$(echo "" | bemenu -i -p 'Name this tab image:')
             [[ ! -z $name ]] && mv $TMP_TAB $DIRECTORY/$name.png && notify-send -t 2000 -i none "TABBER" "tab saved as $DIRECTORY/$name.png"
         fi
     else
-        slop=$(slop -f "%x %y %w %h") || exit 1
+        slop=$(slurp -f "%x %y %w %h")
         read -r X Y W H < <(echo $slop)
-        subdirectory=$(rofi -theme input.rasi -dmenu -i -p 'Name directory for this tab')
+        subdirectory=$(echo "" | bemenu -i -p 'Name directory for this tab:')
         [ -z $subdirectory ] && exit 0
 
         mkdir $DIRECTORY/$subdirectory
-        echo -e "${W}x${H}+${X}+${Y}\n${subdirectory}" > $MULTIPLE_DATA
+        echo -e "${X},${Y} ${W}x${H}\n${subdirectory}" > $MULTIPLE_DATA
     fi
 fi
