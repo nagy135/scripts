@@ -1,0 +1,34 @@
+#!/bin/bash
+
+declare -A projects
+
+SERVER_DUMP_NAME="dump.sql"
+
+read -r -d '' VAR << EOM
+vnagy@49.12.100.180
+crypton
+crypton_prod
+rvbAQdS5U7U2
+EOM
+projects["crypton"]=$VAR
+
+
+choice=$(echo ${!projects[@]} | tr ' ' '\n' | fzf)
+
+[ -z $choice ] && echo "nothing chosen...exiting" && exit 1
+
+lines="${projects['crypton']}"
+
+location=$(echo "$lines" | sed -n '1p')
+user=$(echo "$lines" | sed -n '2p')
+db=$(echo "$lines" | sed -n '3p')
+pass=$(echo "$lines" | sed -n '4p')
+
+arg="'MYSQL_PWD=\"$pass\" mysqldump -u $user $db > ~/$SERVER_DUMP_NAME'" 
+
+echo "ssh $location $arg"
+echo "running dumping db"
+
+ssh $location $arg && \
+echo "getting it back locally" && \
+scp $location:./$SERVER_DUMP_NAME .
