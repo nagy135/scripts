@@ -77,6 +77,15 @@ install_subtube(){
     sudo make install
 }
 
+install_swayidle(){
+    cd $CLONES_DIR
+	git clone https://github.com/swaywm/swayidle
+	cd swayidle
+    mason build
+    ninja -C build
+    sudo ninja -C build install
+}
+
 CLONES_DIR=$HOME/Clones
 DOTS_DIR=$CLONES_DIR/dots
 
@@ -85,13 +94,14 @@ git clone https://github.com/nagy135/dots $DOTS_DIR
 # mine
 git clone https://github.com/nagy135/hackerrank $CLONES_DIR/hackerrank
 git clone https://github.com/nagy135/pomodorust $CLONES_DIR/pomodorust
-install_subtube
 git clone https://github.com/nagy135/sort-rs $CLONES_DIR/sort-rs
 git clone https://github.com/nagy135/rusty-type $CLONES_DIR/rusty-type
 git clone https://github.com/nagy135/utils $CLONES_DIR/utils
 git clone https://github.com/nagy135/dwm $CLONES_DIR/dwm
 git clone https://github.com/nagy135/brain-dumps $CLONES_DIR/brain-dumps
 git clone https://github.com/nagy135/3Dmodels $CLONES_DIR/3Dmodels
+install_subtube
+install_swayidle
 
 # other
 install_paru
