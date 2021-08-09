@@ -101,7 +101,6 @@ git clone https://github.com/nagy135/dwm $CLONES_DIR/dwm
 git clone https://github.com/nagy135/brain-dumps $CLONES_DIR/brain-dumps
 git clone https://github.com/nagy135/3Dmodels $CLONES_DIR/3Dmodels
 install_subtube
-install_swayidle
 
 # other
 install_paru
@@ -124,6 +123,8 @@ paru google-chrome \
     networkmanager-iwd \
     spotify-tui \
     vidir \
+    swayidle-git \ # broken gpg for non-git version
+    swaylock-effects-git \ # broken gpg for non-git version
     htim
 
 # }}}
