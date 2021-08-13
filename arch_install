@@ -27,6 +27,7 @@ mkdir ~/Clones
 sudo pacman -Syy
 sudo pacman -S \
 	alacritty \
+    cronie \
 	git \
     tree \
     stow \
