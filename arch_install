@@ -57,6 +57,8 @@ sudo pacman -S \
   sudo usermod -a -G video infiniter
 
   sudo systemctl enable iwd.service
+
+  sudo systemctl enable cronie.service
 # }}}
 
 # }}}
