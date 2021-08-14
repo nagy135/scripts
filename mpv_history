@@ -13,7 +13,11 @@ if [[ $(cat $HISTORY | wc -l) -eq 0 ]]; then
     exit 0
 fi
 
+# remove those that have no title
 sed -i "/^(/d" $HISTORY
+
+# remove duplicates by mi utility binary (https://github.com/nagy135/utils/tree/master/uniquer)
+uniquer $HISTORY
 
 if [[ $1 == '--clipboard' ]] || [[ $1 == '--qutebrowser' ]]; then
     type=$(echo $1 | tr -d '-')
@@ -52,4 +56,3 @@ else
         fi
     fi
 fi
-uniquer $HISTORY
