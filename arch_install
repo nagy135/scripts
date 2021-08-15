@@ -50,15 +50,17 @@ sudo pacman -S \
     iwd \
     tmux \
     slop \
+    docker \
     youtube-dl
 
 # hooks {{{
   sudo usermod -a -G transmission infiniter
   sudo usermod -a -G video infiniter
+  sudo usermod -a -G docker infiniter
 
   sudo systemctl enable iwd.service
-
   sudo systemctl enable cronie.service
+  sudo systemctl enable docker.service
 # }}}
 
 # }}}
