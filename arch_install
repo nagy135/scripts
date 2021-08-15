@@ -51,6 +51,7 @@ sudo pacman -S \
     tmux \
     slop \
     docker \
+    docker-compose \
     youtube-dl
 
 # hooks {{{
