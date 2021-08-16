@@ -44,6 +44,8 @@ else
         notify-send -i 'none' "Clipboard content" "$url"
     elif [[ $1 == '--qutebrowser' ]]; then
         qutebrowser $url
+    elif [[ $1 == '--chrome' ]]; then
+        google-chrome-stable $url
     else
         if [[ $(echo $url | sed '/.*\(twitch\.tv\).*/d' | wc -l) -eq 0 ]]; then
             mpv $url
