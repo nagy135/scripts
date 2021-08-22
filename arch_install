@@ -52,6 +52,7 @@ sudo pacman -S \
     slop \
     docker \
     docker-compose \
+    net-tools \
     youtube-dl
 
 # hooks {{{
