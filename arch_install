@@ -83,6 +83,11 @@ echo "### Creating dash sh links ###"
 sudo ln -sfT dash /bin/sh
 sudo ln -sfT dash /usr/bin/sh
 
+# tmux
+echo "### Tmux tpm install ###"
+mkdir -p ~/.tmux/plugins
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
 # zsh
 echo "### Stows ###"
 (cd $DOTS_DIR ; stow zsh)
