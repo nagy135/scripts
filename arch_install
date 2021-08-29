@@ -22,31 +22,35 @@ mkdir ~/Downloads
 mkdir ~/Code
 mkdir ~/Clones
 
+# Script constants
+AUR_HELPER=paru
+
 # installs {{{
 
 sudo pacman -Syy
 sudo pacman -S \
-	alacritty \
+    alacritty \
     cronie \
-	git \
+    git \
+    zsh \
+    dash \
     tree \
     stow \
     imagemagick \
     slurp \
-	wget \
-	neofetch \
+    wget \
+    neofetch \
     pamixer \
     alsa-utils \
-	mpv \
-	pavucontrol \
-	pulseaudio \
-	wl-clipboard \
-	zathura \
-	zathura-pdf-mupdf \
-	qutebrowser \
+    mpv \
+    pavucontrol \
+    pulseaudio \
+    wl-clipboard \
+    zathura \
+    zathura-pdf-mupdf \
+    qutebrowser \
     rsync \
     transmission-cli \
-    # network-manager-applet \
     iwd \
     tmux \
     slop \
@@ -54,16 +58,24 @@ sudo pacman -S \
     docker-compose \
     net-tools \
     youtube-dl
+    # network-manager-applet
 
 # hooks {{{
+
+  # adding groups
   sudo usermod -a -G transmission infiniter
   sudo usermod -a -G video infiniter
   sudo usermod -a -G docker infiniter
 
+  # services
   sudo systemctl enable iwd.service
   sudo systemctl enable cronie.service
   sudo systemctl enable docker.service
-# }}}
+
+  # dash as sh
+  sudo ln -sfT dash /bin/sh
+  sudo ln -sfT dash /usr/bin/sh
+  # }}}
 
 # }}}
 
@@ -71,23 +83,24 @@ sudo pacman -S \
 
 install_paru(){
     cd $CLONES_DIR
-	git clone https://aur.archlinux.org/paru.git
-	cd paru
-	makepkg -si
+    git clone https://aur.archlinux.org/paru.git
+    cd paru
+    makepkg -si
 }
 
 install_subtube(){
-    cd $CLONES_DIR
-    git clone https://github.com/nagy135/subtube
-    cd subtube
-    echo "Installing subtube..."
-    sudo make install
+    # cd $CLONES_DIR
+    # git clone https://github.com/nagy135/subtube
+    # cd subtube
+    # echo "Installing subtube..."
+    # sudo make install
+    $AUR_HELPER subtube-git
 }
 
 install_swayidle(){
     cd $CLONES_DIR
-	git clone https://github.com/swaywm/swayidle
-	cd swayidle
+    git clone https://github.com/swaywm/swayidle
+    cd swayidle
     mason build
     ninja -C build
     sudo ninja -C build install
@@ -110,7 +123,7 @@ git clone https://github.com/nagy135/3Dmodels $CLONES_DIR/3Dmodels
 install_subtube
 
 # other
-install_paru
+[[ $AUR_HELPER == 'paru' ]] && install_paru
 git clone https://github.com/nagy135/torque $CLONES_DIR/torque
 git clone https://github.com/nagy135/wuzz $CLONES_DIR/wuzz
 git clone https://github.com/nagy135/z.lua $CLONES_DIR/z.lua
@@ -119,11 +132,11 @@ git clone https://github.com/nagy135/z.lua $CLONES_DIR/z.lua
 
 # AUR installs {{{
 
-paru -Syy
-paru google-chrome \
-	lazygit \
-	bemenu-wayland \
-	nerd-fonts-mononoki \
+$AUR_HELPER -Syy
+$AUR_HELPER google-chrome \
+    lazygit \
+    bemenu-wayland \
+    nerd-fonts-mononoki \
     river \
     wob \
     subliminal \
@@ -131,11 +144,10 @@ paru google-chrome \
     spotify-tui \
     vidir \
     swayidle-git \ # broken gpg for non-git version
-    swaylock-effects-git \ # broken gpg for non-git version
-    htim
+    swaylock-effects-git # broken gpg for non-git version
 
 # }}}
 
 # AUR hooks {{{
-  sudo systemctl enable NetworkManager.service # iwd compatible version
+sudo systemctl enable NetworkManager.service # iwd compatible version
 # }}}
