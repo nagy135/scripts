@@ -107,7 +107,7 @@ install_swayidle(){
 }
 
 CLONES_DIR=$HOME/Clones
-DOTS_DIR=$CLONES_DIR/dots
+DOTS_DIR=$HOME/.dots
 
 git clone https://github.com/nagy135/dots $DOTS_DIR
 
