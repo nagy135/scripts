@@ -10,12 +10,13 @@
 
 # still while root
 useradd -m -g wheel infiniter
-echo "Changing infiniter user password"
+echo "### Changing infiniter user password ###"
 passwd infiniter
 
-echo "Logging in as infiniter"
+echo "### Logging in as infiniter ###"
 su infiniter
 
+echo "### Creating user folders ###"
 mkdir ~/Torrents
 mkdir ~/Documents
 mkdir ~/Downloads
@@ -27,6 +28,7 @@ AUR_HELPER=paru
 
 # installs {{{
 
+echo "### Official repository packages ###"
 sudo pacman -Syy
 sudo pacman -S \
     alacritty \
@@ -62,20 +64,210 @@ sudo pacman -S \
 
 # hooks {{{
 
-  # adding groups
-  sudo usermod -a -G transmission infiniter
-  sudo usermod -a -G video infiniter
-  sudo usermod -a -G docker infiniter
+echo "### Running my post-install hooks ###"
 
-  # services
-  sudo systemctl enable iwd.service
-  sudo systemctl enable cronie.service
-  sudo systemctl enable docker.service
+# adding groups
+echo "### Assigning groups ###"
+sudo usermod -a -G transmission infiniter
+sudo usermod -a -G video infiniter
+sudo usermod -a -G docker infiniter
 
-  # dash as sh
-  sudo ln -sfT dash /bin/sh
-  sudo ln -sfT dash /usr/bin/sh
-  # }}}
+# services
+echo "### Enabling services ###"
+sudo systemctl enable iwd.service
+sudo systemctl enable cronie.service
+sudo systemctl enable docker.service
+
+# dash as sh
+echo "### Creating dash sh links ###"
+sudo ln -sfT dash /bin/sh
+sudo ln -sfT dash /usr/bin/sh
+
+# zsh
+echo "### Stows ###"
+(cd $DOTS_DIR ; stow zsh)
+(cd $DOTS_DIR ; stow alacritty)
+(cd $DOTS_DIR ; stow crontab)
+(cd $DOTS_DIR ; stow mpv)
+(cd $DOTS_DIR ; stow qutebrowser)
+(cd $DOTS_DIR ; stow tmux)
+# }}}
+
+# }}}
+
+# git installs {{{
+
+install_paru(){
+    cd $CLONES_DIR
+    git clone https://aur.archlinux.org/paru.git
+    cd paru
+    makepkg -si
+}
+
+install_subtube(){
+    # cd $CLONES_DIR
+    # git clone https://github.com/nagy135/subtube
+    # cd subtube
+    # echo "Installing subtube..."
+    # sudo make install
+    $AUR_HELPER subtube-git
+}
+
+install_swayidle(){
+    cd $CLONES_DIR
+    git clone https://github.com/swaywm/swayidle
+    cd swayidle
+    mason build
+    ninja -C build
+    sudo ninja -C build install
+}
+
+CLONES_DIR=$HOME/Clones
+DOTS_DIR=$HOME/.dots
+
+git clone https://github.com/nagy135/dots $DOTS_DIR
+
+# mine
+git clone https://github.com/nagy135/hackerrank $CLONES_DIR/hackerrank
+git clone https://github.com/nagy135/pomodorust $CLONES_DIR/pomodorust
+git clone https://github.com/nagy135/sort-rs $CLONES_DIR/sort-rs
+git clone https://github.com/nagy135/rusty-type $CLONES_DIR/rusty-type
+git clone https://github.com/nagy135/utils $CLONES_DIR/utils
+git clone https://github.com/nagy135/dwm $CLONES_DIR/dwm
+git clone https://github.com/nagy135/brain-dumps $CLONES_DIR/brain-dumps
+git clone https://github.com/nagy135/3Dmodels $CLONES_DIR/3Dmodels
+install_subtube
+
+# other
+[[ $AUR_HELPER == 'paru' ]] && install_paru
+git clone https://github.com/nagy135/torque $CLONES_DIR/torque
+git clone https://github.com/nagy135/wuzz $CLONES_DIR/wuzz
+git clone https://github.com/nagy135/z.lua $CLONES_DIR/z.lua
+
+# }}}
+
+# AUR installs {{{
+
+$AUR_HELPER -Syy
+$AUR_HELPER google-chrome \
+    alacritty \
+    cronie \
+    git \
+    zsh \
+    dash \
+    tree \
+    stow \
+    imagemagick \
+    slurp \
+    wget \
+    neofetch \
+    pamixer \
+    alsa-utils \
+    mpv \
+    pavucontrol \
+    pulseaudio \
+    wl-clipboard \
+    zathura \
+    zathura-pdf-mupdf \
+    qutebrowser \
+    rsync \
+    transmission-cli \
+    iwd \
+    tmux \
+    slop \
+    docker \
+    docker-compose \
+    net-tools \
+    youtube-dl
+# }}}
+
+# }}}
+
+# git installs {{{
+
+install_paru(){
+    cd $CLONES_DIR
+    git clone https://aur.archlinux.org/paru.git
+    cd paru
+    makepkg -si
+}
+
+install_subtube(){
+    # cd $CLONES_DIR
+    # git clone https://github.com/nagy135/subtube
+    # cd subtube
+    # echo "Installing subtube..."
+    # sudo make install
+    $AUR_HELPER subtube-git
+}
+
+install_swayidle(){
+    cd $CLONES_DIR
+    git clone https://github.com/swaywm/swayidle
+    cd swayidle
+    mason build
+    ninja -C build
+    sudo ninja -C build install
+}
+
+CLONES_DIR=$HOME/Clones
+DOTS_DIR=$HOME/.dots
+
+git clone https://github.com/nagy135/dots $DOTS_DIR
+
+# mine
+git clone https://github.com/nagy135/hackerrank $CLONES_DIR/hackerrank
+git clone https://github.com/nagy135/pomodorust $CLONES_DIR/pomodorust
+git clone https://github.com/nagy135/sort-rs $CLONES_DIR/sort-rs
+git clone https://github.com/nagy135/rusty-type $CLONES_DIR/rusty-type
+git clone https://github.com/nagy135/utils $CLONES_DIR/utils
+git clone https://github.com/nagy135/dwm $CLONES_DIR/dwm
+git clone https://github.com/nagy135/brain-dumps $CLONES_DIR/brain-dumps
+git clone https://github.com/nagy135/3Dmodels $CLONES_DIR/3Dmodels
+install_subtube
+
+# other
+[[ $AUR_HELPER == 'paru' ]] && install_paru
+git clone https://github.com/nagy135/torque $CLONES_DIR/torque
+git clone https://github.com/nagy135/wuzz $CLONES_DIR/wuzz
+git clone https://github.com/nagy135/z.lua $CLONES_DIR/z.lua
+
+# }}}
+
+# AUR installs {{{
+
+$AUR_HELPER -Syy
+$AUR_HELPER google-chrome \
+    alacritty \
+    cronie \
+    git \
+    zsh \
+    dash \
+    tree \
+    stow \
+    imagemagick \
+    slurp \
+    wget \
+    neofetch \
+    pamixer \
+    alsa-utils \
+    mpv \
+    pavucontrol \
+    pulseaudio \
+    wl-clipboard \
+    zathura \
+    zathura-pdf-mupdf \
+    qutebrowser \
+    rsync \
+    transmission-cli \
+    iwd \
+    tmux \
+    slop \
+    docker \
+    docker-compose \
+    net-tools \
+    youtube-dl
+# }}}
 
 # }}}
 
