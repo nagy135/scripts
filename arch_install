@@ -38,6 +38,7 @@ sudo pacman -S \
     dash \
     tree \
     stow \
+    lsd \
     imagemagick \
     slurp \
     wget \
