@@ -48,6 +48,7 @@ sudo pacman -S \
     mpv \
     pavucontrol \
     pulseaudio \
+    mlocate \
     wl-clipboard \
     zathura \
     zathura-pdf-mupdf \
