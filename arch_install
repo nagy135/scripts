@@ -60,6 +60,8 @@ sudo pacman -S \
     docker \
     docker-compose \
     net-tools \
+    bluez \
+    bluez-utils \
     youtube-dl
     # network-manager-applet
 
@@ -78,6 +80,7 @@ echo "### Enabling services ###"
 sudo systemctl enable iwd.service
 sudo systemctl enable cronie.service
 sudo systemctl enable docker.service
+sudo systemctl enable bluetooth.service
 
 # dash as sh
 echo "### Creating dash sh links ###"
