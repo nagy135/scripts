@@ -16,9 +16,6 @@ fi
 # remove those that have no title
 sed -i "/^(/d" $HISTORY
 
-# remove duplicates by mi utility binary (https://github.com/nagy135/utils/tree/master/uniquer)
-uniquer $HISTORY
-
 if [[ $1 == '--clipboard' ]] || [[ $1 == '--qutebrowser' ]]; then
     type=$(echo $1 | tr -d '-')
     chosen=$(tac $HISTORY | bemenu -l 10 -i -p "MPV history - $type")
@@ -58,3 +55,6 @@ else
         fi
     fi
 fi
+
+# remove duplicates by mi utility binary (https://github.com/nagy135/utils/tree/master/uniquer)
+uniquer $HISTORY
