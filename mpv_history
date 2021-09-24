@@ -40,12 +40,12 @@ else
 
 
     if [[ $1 == '--clipboard' ]]; then
-        echo $url | wl-copy
+        echo "$url" | wl-copy
         notify-send -i 'none' "Clipboard content" "$url"
     elif [[ $1 == '--qutebrowser' ]]; then
-        qutebrowser $url
+        qutebrowser "$url"
     elif [[ $1 == '--chrome' ]]; then
-        google-chrome-stable $url
+        google-chrome-stable "$url"
     else
         if [[ $(echo $url | sed '/.*\(twitch\.tv\).*/d' | wc -l) -eq 0 ]]; then
             mpv $url
