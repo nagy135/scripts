@@ -1,0 +1,10 @@
+#!/bin/bash
+
+TYPE='spotify'
+DESKTOP=9
+
+riverctl set-focused-tags $((1 << ($DESKTOP - 1)))
+[[ ! $(pidof $TYPE) ]] \
+    && (spotify &) \
+    && sleep 1 \
+    && riverctl toggle-float # TODO: this should be done through some "rule"
