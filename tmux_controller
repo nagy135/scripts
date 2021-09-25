@@ -2,12 +2,14 @@
 
 ICON="~/.scripts/resources/tmux.png"
 
+FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d"
+
 if [[ $1 == 'kill' ]]; then
-    chosen=$(tmux ls | awk -F: '{print $1}' | fuzzel -d -P 'Kill tmux session: ')
+    chosen=$(tmux ls | awk -F: '{print $1}' | $FUZZEL -P 'Kill tmux session: ')
     [[ ! -z $chosen ]] && notify-send -i $ICON -t 2000 "Tmux session killed" && foot tmux kill-session -t "$chosen" &> /dev/null &
     exit 0
 elif [[ $1 == 'create' ]]; then
-    chosen=$(echo "" | fuzzel -d -P 'Create tmux session: ')
+    chosen=$(echo "" | $FUZZEL -P 'Create tmux session: ')
     if [[ ! -z $chosen ]]; then
         notify-send -i $ICON -t 2000 "Created" "$chosen"
         tmux new-session -d -s $chosen
@@ -15,7 +17,7 @@ elif [[ $1 == 'create' ]]; then
     exit 0
 elif [[ $1 == "list" ]]; then
     pid=$(xdotool search --classname toggle_tmux getwindowpid)
-    chosen=$(tmux ls | awk -F: '{print $1}' | fuzzel -d -P 'Switch tmux session: ')
+    chosen=$(tmux ls | awk -F: '{print $1}' | $FUZZEL -P 'Switch tmux session: ')
     [[ -z $chosen ]] && exit 0
     # if [[ $pid != '' ]]; then
         tmux switch-client -t "$chosen"
