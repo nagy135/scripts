@@ -337,6 +337,7 @@ git clone https://github.com/nagy135/z.lua $CLONES_DIR/z.lua
 $AUR_HELPER -Syy
 $AUR_HELPER google-chrome \
     lazygit \
+    fuzzel \
     bemenu-wayland \
     nerd-fonts-mononoki \
     river \
