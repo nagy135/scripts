@@ -5,8 +5,10 @@ HISTORY="/home/infiniter/.local/share/qutebrowser/mpv_history"
 FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d -w 70"
 
 if [[ $1 == '--clear' ]]; then
+    backup=/tmp/mpv_history.backup
+    cp $HISTORY $backup
     echo -n "" > $HISTORY
-    notify-send -u critical -t 1500 "MPV history" "ARE YOU SURE??? uncomment this line in mpv_history script"
+    notify-send -u critical -t 1500 "MPV history" "cleared all records (moved them to $backup)"
     exit 0
 fi
 
