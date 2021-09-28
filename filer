@@ -2,29 +2,30 @@
 
 [[ -z $1 ]] && notify-send "Filer" "no argument provided" && exit 1
 
-mesg=$(echo -e "Open: Enter - Clipboard: Alt+1" | column -s '-' -t)
+OPEN_IN_TERMINAL="foot --working-directory"
+FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d -w 70"
 
-chosen=$(ls $1 | bemenu -l 10 -i -p "Filer")
-signal=$?
-chosen=$(echo "$chosen" | tr -d '\n')
-[[ -z $chosen ]] && notify-send "Filer" "no file selected" && exit 1
+sufix=""
+[[ $2 == "clip" ]] && sufix=" (clipboard)"
 
-chosen="$1/$chosen"
-[[ $signal -eq 10 ]] && echo -n $chosen | xclip -selection clipboard && exit 0
+chosen=$(ls $1 | $FUZZEL -P "Filer${sufix}: ")
+[[ -z $chosen ]] && exit
 
-[[ -d $chosen ]] && $TERMINAL --working-directory "$chosen" && exit 0
+chosen=$(echo "$1/$chosen" | tr -d '\n')
+
+[[ $2 == "clip" ]] \
+    && (echo -n $chosen | wl-copy) \
+    && exit
 
 case "$chosen" in
     *.jpg | *.png ) 
-        echo png
         sxiv $chosen
         ;;
     *.pdf ) 
-        echo pdf
         zathura $chosen &> /dev/null
         ;;
     *)
-        echo last
-        $TERMINAL -e nvim $chosen
+        notify-send "Filer" "unrecognized file format, opening terminal in directory..."
+        $OPEN_IN_TERMINAL $(dirname $chosen) #  TODO: maybe recursive choices?
         ;;
 esac
