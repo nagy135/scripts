@@ -3,6 +3,7 @@
 DIRECTORY=~/Documents/Tabs
 TMP_TAB=/tmp/tabber.png
 MULTIPLE_DATA=/tmp/tabber_multiple_data
+FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d -w 40"
 
 if [[ $1 == "process" ]]; then
     [ ! -f $MULTIPLE_DATA ] && notify-send "Tabber" "set multiple data first!" && exit 1
@@ -43,7 +44,7 @@ elif [[ $1 == "grab" ]]; then
     grim -g "$geometry" $DIRECTORY/$subdirectory/$order.png
     notify-send -i 'none' -t 300 "Tabber" "piece captured"
 else
-    choice=$(echo -e "single\nmultiple" | bemenu -i)
+    choice=$(echo -e "single\nmultiple" | $FUZZEL -l 2)
     [ -z $choice ] && exit 0
 
     if [[ $choice == "single" ]]; then
@@ -51,13 +52,13 @@ else
         read -r X Y W H < <(echo $slop)
         grim -g "${X},${Y} ${W}x${H}" $TMP_TAB
         if [[ -f $TMP_TAB ]]; then
-            name=$(echo "" | bemenu -i -p 'Name this tab image:')
+            name=$(echo "" | $FUZZEL -l 0 -P 'Name this tab image: ')
             [[ ! -z $name ]] && mv $TMP_TAB $DIRECTORY/$name.png && notify-send -t 2000 -i none "TABBER" "tab saved as $DIRECTORY/$name.png"
         fi
     else
         slop=$(slurp -f "%x %y %w %h")
         read -r X Y W H < <(echo $slop)
-        subdirectory=$(echo "" | bemenu -i -p 'Name directory for this tab:')
+        subdirectory=$(echo "" | $FUZZEL -l 0 -P 'Name directory for this tab: ')
         [ -z $subdirectory ] && exit 0
 
         mkdir $DIRECTORY/$subdirectory
