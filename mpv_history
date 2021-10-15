@@ -27,7 +27,7 @@ else
     prompt="MPV history"
 
 fi
-chosen=$(tac $HISTORY | sed 's/\s-\sYouTube(.*//' | sed 's/([^)]*)$//'| $FUZZEL -P "$prompt")
+chosen=$(tac $HISTORY | sed 's/\s-\sYouTube(.*//' | sed 's/([^)]*)$//'| $FUZZEL -P "$prompt: ")
 [[ $chosen == '' ]] && exit 1
 chosen=$(cat $HISTORY | grep "$chosen" | head -n 1)
 echo $chosen >> $HISTORY
