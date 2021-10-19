@@ -18,7 +18,7 @@ elif [[ $chosen = 'Reboot' ]]; then
     save_tmux
 	reboot
 elif [[ $chosen = 'Lock' ]]; then
-    swaylock --clock
+    swaylock --clock -S --indicator
 else
     echo 'Doing nothing.'
 fi
