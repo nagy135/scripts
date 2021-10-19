@@ -27,12 +27,6 @@ elif [[ $1 == '-mute' ]]; then
         rm /tmp/mute_val
     else
         cat /tmp/current_volume > /tmp/mute_val
-        volnoti-show -m &> /dev/null
-    fi
-
-    runcount=$(ps -aux | grep volnoti | wc -l)
-    if [ $runcount -lt 2 ]; then
-        volnoti -a 0.9 -t 2 -r 20
     fi
 else
     if [[ -f /tmp/mute_val ]]; then
@@ -43,14 +37,8 @@ else
         current_volume=$(cat /tmp/current_volume)
     fi
     current_volume=$(($current_volume+$1))
-    if [[ $current_volume -le 0 ]]; then
-        current_volume=0
-    fi
-    # notify-send -t 2000 "Volume" "$current_volume%" --icon=dialog-information
+    [[ $current_volume -le 0 ]] && current_volume=0
     echo "$current_volume" > /tmp/current_volume
     echo "$current_volume" > $fifo
-    current_volume=$(echo "$current_volume%")
-    pactl set-sink-volume 0 $current_volume
-
+    pactl set-sink-volume 0 "$current_volume%"
 fi
-# lego_refresh "volume"
