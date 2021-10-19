@@ -29,9 +29,8 @@ elif [[ $1 == '-mute' ]]; then
 else
     [[ ! -f $MUTE_VAL ]] \
         && current_volume=$(cat $CURRENT_VOLUME) \
-        exit
+        || current_volume=$(cat $MUTE_VAL)
 
-    current_volume=$(cat $MUTE_VAL)
     rm $MUTE_VAL
     pactl set-sink-mute 0 toggle
 
