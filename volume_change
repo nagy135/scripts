@@ -1,44 +1,43 @@
 #!/bin/bash
 
-fifo=/tmp/volume.fifo
-pid_file=/tmp/volume.pid
+FIFO=/tmp/volume.fifo
+PID=/tmp/volume.pid
+CURRENT_VOLUME=/tmp/current_volume
+MUTE_VAL=$MUTE_VAL
 
 if [[ $1 == '-init' ]]; then
-    mkfifo $fifo
-    chmod 766 $fifo
-    tail -f $fifo | xob -t 1000 -s volume -m 100 &> /dev/null &
-    echo $! > $pid_file
-    exit 0
-elif [[ $1 == '-k' ]]; then
-    rm $fifo
-    kill $(cat $pid_file)
-    pkill -f "tail -f $fifo"
-    exit 0
-fi
+    mkfifo $FIFO
+    chmod 766 $FIFO
+    tail -f $FIFO | xob -t 1000 -s volume -m 100 &> /dev/null &
+    echo $! > $PID
 
-if [[ $1 == "-init" ]]; then
-    echo "50" > /tmp/current_volume
+    echo "50" > $CURRENT_VOLUME
     pactl set-sink-volume 0 50%
+elif [[ $1 == '-k' ]]; then
+    rm $FIFO
+    kill $(cat $PID)
+    pkill -f "tail -f $fifo"
 elif [[ $1 == '-mute' ]]; then
     pactl set-sink-mute 0 toggle
 
-    if [[ -f /tmp/mute_val ]]; then
-        cat /tmp/mute_val > /tmp/current_volume
-        rm /tmp/mute_val
-    else
-        cat /tmp/current_volume > /tmp/mute_val
-    fi
+    [[ ! -f $MUTE_VAL ]] \
+        && cat $CURRENT_VOLUME > $MUTE_VAL \
+        && exit
+
+    cat $MUTE_VAL > $CURRENT_VOLUME
+    rm $MUTE_VAL
 else
-    if [[ -f /tmp/mute_val ]]; then
-        current_volume=$(cat /tmp/mute_val)
-        rm /tmp/mute_val
-        pactl set-sink-mute 0 toggle
-    else
-        current_volume=$(cat /tmp/current_volume)
-    fi
+    [[ ! -f $MUTE_VAL ]] \
+        && current_volume=$(cat $CURRENT_VOLUME) \
+        exit
+
+    current_volume=$(cat $MUTE_VAL)
+    rm $MUTE_VAL
+    pactl set-sink-mute 0 toggle
+
     current_volume=$(($current_volume+$1))
     [[ $current_volume -le 0 ]] && current_volume=0
-    echo "$current_volume" > /tmp/current_volume
-    echo "$current_volume" > $fifo
+    echo "$current_volume" > $CURRENT_VOLUME
+    echo "$current_volume" > $FIFO
     pactl set-sink-volume 0 "$current_volume%"
 fi
