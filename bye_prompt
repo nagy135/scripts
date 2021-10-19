@@ -1,24 +1,24 @@
 #!/bin/bash
 
+FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d"
+
 save_tmux(){
     /home/infiniter/.tmux/plugins/tmux-resurrect/scripts/save.sh
 }
 
-chosen=$(echo -e "Power OFF\nHibernate\nSuspend\nReboot\nLock" | rofi -i -p 'BYE PROMPT' -dmenu -theme tmux)
-echo $chosen
+chosen=$(echo -e "Power OFF\nHibernate\nSuspend\nReboot\nLock" | $FUZZEL -P 'BYE PROMPT: ')
 if [[ $chosen = 'Power OFF' ]]; then
     save_tmux
-	loginctl poweroff
+	poweroff
 elif [[ $chosen = 'Hibernate' ]]; then
-	loginctl hibernate
+    notify-send 'not implemented'
 elif [[ $chosen = 'Suspend' ]]; then
-    sleep 0.1
-	loginctl suspend
+    notify-send 'not implemented'
 elif [[ $chosen = 'Reboot' ]]; then
     save_tmux
-	loginctl reboot
+	reboot
 elif [[ $chosen = 'Lock' ]]; then
-    inactivity_lock
+    swaylock --clock
 else
     echo 'Doing nothing.'
 fi
