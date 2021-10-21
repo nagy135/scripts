@@ -6,44 +6,47 @@ RED=$'\e[1;31m'
 BLUE=$'\e[1;34m'
 END=$'\e[0m'
 
-declare -A conn_pairs
-
 colorize(){
     echo "$1${END}" | sed "s/^/${RED}/ ; s/@/${END}@${YELLOW}/"
 }
-conn_pairs["biologia"]="root@78.47.31.136"
-conn_pairs["swissfunds_dev"]="vnagy@49.12.100.180"
-conn_pairs["swissfunds_prod"]="svycarskapujcka-new@217.16.184.94"
-conn_pairs["og_dev"]="vnagy@142.93.38.79"
-conn_pairs["og_prod"]="vnagy@206.189.116.148"
-conn_pairs["dev"]="vnagy@157.230.108.64"
-conn_pairs["caresee"]="vnagy@165.22.85.171"
-conn_pairs["wishmaker"]="vnagy@116.203.48.101"
-conn_pairs["goldguard_dev"]="vnagy@goldguard.bywazzupa.com"
-conn_pairs["goldguard_prod"]="ubuntu@35.158.187.52"
-conn_pairs["chcemauto"]="developer@88.99.173.121"
 
+directory="$(dirname "$(realpath "$0")")"
+source $directory/resources/connections
+
+# dummy argument parsing
 [[ $1 == 'scp' ]] && SCP=1 || SCP=0
 [[ $1 == 'clip' ]] && CLIP=1 || CLIP=0
 
+# select connection
 choice=$(echo ${!conn_pairs[@]} | tr ' ' '\n' | fzf)
-[ -z $choice ] && echo "nothing chosen...exiting" && exit 1
+[ -z $choice ] && echo "nothing chosen, exiting..." && exit 1
 
-colorized=$(colorize ${conn_pairs[${choice}]})
-
-if [ $CLIP -eq 1 ]; then
-    echo -n ${conn_pairs[${choice}]} | xclip -sel clipboard
-    exit 0
+# if multiuser, select using fzf again
+IFS=";" read -r -a user_selection <<< "${conn_pairs[${choice}]}"
+if [[ ${#user_selection[@]} -gt 1 ]]; then
+    user=$(echo ${user_selection[@]} | tr ' ' '\n' | sed 's/@.*$//'| fzf)
+    [ -z $user ] && echo "no user chosen, exiting..." && exit 1
+    connection=$(echo ${user_selection[@]} | tr ' ' '\n' | grep $user)
+else
+    connection="${user_selection[0]}"
 fi
 
+colorized=$(colorize $connection)
+
+# if copy to clipboard
+if [ $CLIP -eq 1 ]; then
+    echo -n ${conn_pairs[${choice}]} | xclip -sel clipboard
+    exit
+fi
+
+# if simple connection
 if [ $SCP -eq 0 ]; then
     echo "${GREEN}running${END} ${BLUE}ssh${END} ${colorized}${END}"
-    ssh ${conn_pairs[${choice}]}
-    exit 0
+    ssh $connection
+    exit
 fi
 
 # else scp transfer
-
 echo "1 : local => server"
 echo "2 : server => local"
 echo -n "Direction? (write number): "
@@ -58,5 +61,5 @@ read TO
     || echo "${GREEN}running${END} ${BLUE}scp -r ${colorized}:$FROM $TO${END}"
 
 [ $DIRECTION -eq 1 ] \
-    && scp -r $FROM ${conn_pairs[${choice}]}:$TO \
-    || scp -r ${conn_pairs[${choice}]}:$FROM $TO
+    && scp -r $FROM $connection:$TO \
+    || scp -r $connection:$FROM $TO
