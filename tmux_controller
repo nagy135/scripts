@@ -5,7 +5,7 @@ ICON="~/.scripts/resources/tmux.png"
 FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d"
 
 if [[ $1 == 'kill' ]]; then
-    chosen=$(tmux ls | awk -F: '{print $1}' | $FUZZEL -P 'Kill tmux session: ')
+    chosen=$(tmux ls | awk -F: '{print $1}' | $FUZZEL -C c22330ff -s c22330ff -P 'Kill tmux session: ')
     [[ ! -z $chosen ]] && notify-send -i $ICON -t 2000 "Tmux session killed" && foot tmux kill-session -t "$chosen" &> /dev/null &
     exit 0
 elif [[ $1 == 'create' ]]; then
