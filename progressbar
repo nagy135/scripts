@@ -1,0 +1,47 @@
+#!/bin/bash
+
+_total=15
+_current=0
+i=0
+_spin="⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+declare a b
+
+TITLE="Doing stuff"
+echo ""
+printf '\e[1;34m%-6s\e[m' "${TITLE}"
+echo "
+"
+
+tput civis
+
+clean_up () {
+    tput cnorm
+    stty echo
+}
+trap clean_up EXIT
+progress_bar () {
+    _percent=$(("${1}*100/${_total}*100"/100))
+    _progress=$(("${_percent}*4"/10))
+    _remainder=$((40-_progress))
+    _completed=$(printf "%${_progress}s")
+    _left=$(printf "%${_remainder}s")
+    printf "\rProgress : [${_completed// /#}\e[0m${a}${_spin:i++%${#_spin}:1}${b}${_left// /-}] ${_percent}%%"
+}
+while [ "${_current}" -lt "${_total}" ]
+do
+    sleep 0.3
+    [[ $((i%4)) -eq 1 ]] && _current=$((_current+1))
+
+    if [ "${_current}" = "${_total}" ]
+    then
+        _spin="#"
+        a=""
+        b="\e[0m"   
+    fi
+    progress_bar "${_current}"
+done
+echo "
+"
+printf '\e[0;32m%-6s\e[m' "$(tput bold)${TITLE}: done!"
+echo "
+"
