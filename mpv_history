@@ -1,6 +1,7 @@
 #!/bin/bash
 
 HISTORY="/home/infiniter/.local/share/qutebrowser/mpv_history"
+SEPARATOR="##@@##@@##"
 
 FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d -w 70"
 
@@ -17,42 +18,40 @@ if [[ $(cat $HISTORY | wc -l) -eq 0 ]]; then
     exit 0
 fi
 
-# remove those that have no title
-sed -i "/^(/d" $HISTORY
-
-if [[ $1 == '--clipboard' ]] || [[ $1 == '--qutebrowser' ]]; then
-    type=$(echo $1 | tr -d '-')
-    prompt="MPV history - $type"
+if [[ $1 == '--qutebrowser' ]]; then
+    type=$(echo $1 | tr -d '-' | tr '[:lower:]' '[:upper:]')
+    prompt="$type  "
+elif [[ $1 == '--clipboard' ]]; then
+    type=$(echo $1 | tr -d '-' | tr '[:lower:]' '[:upper:]')
+    prompt="$type  "
+elif [[ $1 == '--chrome' ]]; then
+    type=$(echo $1 | tr -d '-' | tr '[:lower:]' '[:upper:]')
+    prompt="$type  "
 else
-    prompt="MPV history"
+    prompt="HISTORY  "
 
 fi
-chosen=$(tac $HISTORY | sed 's/\s-\sYouTube(.*//' | sed 's/([^)]*)$//'| $FUZZEL -P "$prompt: ")
+chosen=$(tac $HISTORY | sed "s/\s$SEPARATOR.*//" | $FUZZEL -P "$prompt: ")
+
 [[ $chosen == '' ]] && exit 1
 chosen=$(cat $HISTORY | grep "$chosen" | head -n 1)
-echo $chosen >> $HISTORY
 
-url=$(echo $chosen | awk -F "(" '{print $NF}' | sed 's/.$//')
-
+title=$(echo $chosen | sed "s/\s$SEPARATOR.*//")
+url=$(echo $chosen | sed "s/.*\($SEPARATOR\)\s//")
 
 if [[ $1 == '--clipboard' ]]; then
     echo "$url" | wl-copy
     notify-send -i 'none' "Clipboard content" "$url"
 elif [[ $1 == '--qutebrowser' ]]; then
+    echo "$title $SEPARATOR $url" >> $HISTORY
     qutebrowser "$url"
 elif [[ $1 == '--chrome' ]]; then
+    echo "$title $SEPARATOR $url" >> $HISTORY
     google-chrome-stable "$url"
 else
-    if [[ $(echo $url | sed '/.*\(twitch\.tv\).*/d' | wc -l) -eq 0 ]]; then
-        mpv $url
-        if [[ $? -gt 0 ]]; then
-            notify-send -i 'none' -t 2000 "Twitch" "Could not play stream"
-        fi
-    else
-        # youtube-viewer --no-interactive --player=mpv --resolution=720p "$url"
-        mpv $url
-    fi
+    echo "$title $SEPARATOR $url" >> $HISTORY
+    mpv "$url"
 fi
 
 # remove duplicates by my utility binary (https://github.com/nagy135/utils/tree/master/uniquer)
-uniquer $HISTORY
+# uniquer $HISTORY
