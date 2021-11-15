@@ -42,16 +42,15 @@ url=$(echo $chosen | sed "s/.*\($SEPARATOR\)\s//")
 if [[ $1 == '--clipboard' ]]; then
     echo "$url" | wl-copy
     notify-send -i 'none' "Clipboard content" "$url"
+
+    exit 0
 elif [[ $1 == '--qutebrowser' ]]; then
-    echo "$title $SEPARATOR $url" >> $HISTORY
     qutebrowser "$url"
 elif [[ $1 == '--chrome' ]]; then
-    echo "$title $SEPARATOR $url" >> $HISTORY
     google-chrome-stable "$url"
 else
-    echo "$title $SEPARATOR $url" >> $HISTORY
     mpv "$url"
 fi
-
-# remove duplicates by my utility binary (https://github.com/nagy135/utils/tree/master/uniquer)
-# uniquer $HISTORY
+cat $HISTORY | awk -vLine="$chosen" '!index($0,Line)' > /tmp/history
+cat /tmp/history > $HISTORY
+echo "$chosen" >> $HISTORY
