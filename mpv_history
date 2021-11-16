@@ -3,7 +3,7 @@
 HISTORY="/home/infiniter/.local/share/qutebrowser/mpv_history"
 SEPARATOR="##@@##@@##"
 
-FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d -w 70"
+FUZZEL="fuzzel -l 25 -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d -w 70"
 
 if [[ $1 == '--clear' ]]; then
     backup=/tmp/mpv_history.backup
