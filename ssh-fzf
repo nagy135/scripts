@@ -13,9 +13,16 @@ colorize(){
 directory="$(dirname "$(realpath "$0")")"
 source $directory/resources/connections
 
-# dummy argument parsing
-[[ $1 == 'scp' ]] && SCP=1 || SCP=0
-[[ $1 == 'clip' ]] && CLIP=1 || CLIP=0
+SCP=0
+CLIP=0
+case $1 in
+    --scp | -s)
+        SCP=1
+        ;;
+    --clip | -c)
+        CLIP=1
+        ;;
+esac
 
 # select connection
 choice=$(echo ${!conn_pairs[@]} | tr ' ' '\n' | fzf --height 50%)
