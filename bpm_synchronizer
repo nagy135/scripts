@@ -9,6 +9,7 @@ show_help(){
     echo ""
     echo "Options:"
     echo "  -s|--song-path <path>     song on which conversion is performed"
+    echo "  -d|--detect               just detect original BPM and print it out, exiting"
     echo "  -b|--bpm  <number>        target bpm we want song to have (default 120)"
     echo "  -o|--output-dir <path>    directory where song will be generated into (default HOME)"
 }
@@ -38,6 +39,7 @@ change_speed(){
 TARGET_BPM=120
 SONG_PATH=""
 OUTPUT_DIR=""
+DETECT_MODE=0
 while [[ $# -gt 0 ]]; do
     case $1 in
         -b|--bpm)
@@ -52,6 +54,10 @@ while [[ $# -gt 0 ]]; do
             shift
             OUTPUT_DIR=$1
             ;;
+        -d|--detect)
+            shift
+            DETECT_MODE=1
+            ;;
     esac
     shift
 done
@@ -59,6 +65,11 @@ done
 [ -z $SONG_PATH ] \
     && echo "You have to provide path to song (-s)" \
     && exit 1
+
+bpm=$(get_bpm $SONG_PATH)
+[ $DETECT_MODE -eq 1 ] \
+    && echo "BPM: $bpm" \
+    && exit 0
 
 [ -z $OUTPUT_DIR ] \
     && echo "No output dir provided, defaulting to $HOME" \
@@ -68,6 +79,5 @@ done
 re='^[0-9]+$'
 ! [[ $TARGET_BPM =~ $re ]] && echo "Target bpm has to be number" && exit 2
 
-bpm=$(get_bpm $SONG_PATH)
 conversion=$(echo "scale=4;$TARGET_BPM/$bpm" | bc)
 change_speed $SONG_PATH $conversion
