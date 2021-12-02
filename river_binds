@@ -2,8 +2,20 @@
 
 CONFIG=~/.config/river/init
 
-FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 1"
+FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d -w 50"
 
+descriptions=$(sed -n '/###/p' "$CONFIG" \
+    | sed 's/^[ #]*//')
+
+choice=$(echo "$descriptions" | $FUZZEL -P "Pick description: ")
+
+[ -z $choice ] && exit 0
+
+echo "$choice"
+
+bind=$(sed -n "/$choice/{n;p}" "$CONFIG")
+
+echo "bind" "$bind"
 
 # sed -n '/riverctl map/p' "$CONFIG" \
 #     | sed 's/\s*riverctl map//' \
