@@ -11,14 +11,13 @@ choice=$(echo "$descriptions" | $FUZZEL -P "Pick description: ")
 
 [ -z $choice ] && exit 0
 
-echo "$choice"
+# TODO: throwing away mode for now
+bind=$(sed -n "/$choice/{n;p}" "$CONFIG"\
+    | sed 's/riverctl map [a-zA-Z]*\s//' \
+    | sed 's/Mod1/Alt/' \
+    | sed 's/\$mod/Super/' \
+    | cut -d' ' -f1-2 \
+    | tr ' ' '+'
+)
 
-bind=$(sed -n "/$choice/{n;p}" "$CONFIG")
-
-echo "bind" "$bind"
-
-# sed -n '/riverctl map/p' "$CONFIG" \
-#     | sed 's/\s*riverctl map//' \
-#     | sed 's/Mod1/Alt/' \
-#     | sed 's/\$mod/Super/'
-
+notify-send -t 3000 "$choice" "$bind"
