@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# NOTE: throwing away bind mode
+
 CONFIG=~/.config/river/init
 
 FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d -w 50"
@@ -32,20 +34,41 @@ case $1 in
         ;;
 esac
 
-descriptions=$(sed -n '/###/p' "$CONFIG" \
-    | sed 's/^[ #]*//')
+# first prepare lines to search on
+[ $MODE == "bind" ] \
+    && lines=$(sed -n "/###/{n;p}" "$CONFIG" \
+        | sed 's/^\s*//' \
+        | cut -d' ' -f4-5 \
+        | sed 's/Mod1/Alt/' \
+        | sed 's/\$mod/Super/' \
+        | tr ' ' '+')
+[ $MODE == "description" ] \
+    && lines=$(sed -n '/###/p' "$CONFIG" \
+        | sed 's/^[ #]*//')
 
-choice=$(echo "$descriptions" | $FUZZEL -P "Pick description: ")
+# next, select
+choice=$(echo "$lines" | $FUZZEL -P "Pick $MODE: " 2> /dev/null)
+[ -z "$choice" ] && exit 0
 
-[ -z $choice ] && exit 0
+# find matching line
 
-# TODO: throwing away mode for now
-bind=$(sed -n "/$choice$/{n;p}" "$CONFIG"\
-    | sed 's/riverctl map [a-zA-Z]*\s//' \
-    | sed 's/Mod1/Alt/' \
-    | sed 's/\$mod/Super/' \
-    | cut -d' ' -f1-2 \
-    | tr ' ' '+'
-)
+[ $MODE == "description" ] \
+    && pair=$(sed -n "/$choice$/{n;p}" "$CONFIG"\
+        | sed 's/riverctl map [a-zA-Z]*\s//' \
+        | sed 's/Mod1/Alt/' \
+        | sed 's/\$mod/Super/' \
+        | cut -d' ' -f1-2 \
+        | tr ' ' '+'
+    )
+[ $MODE == "bind" ] \
+    && reverted=$(echo "$choice" \
+        | sed 's/Super/$mod/' \
+        | sed 's/Alt/Mod1/' \
+        | tr '+' ' '
+    ) \
+    && echo $reverted \
+    && pair=$(sed -n "/$reverted/{x;p;d;}; x" "$CONFIG" \
+        | sed 's/### //'
+    )
 
-notify-send -t 3000 "$choice" "$bind"
+notify-send -t 3000 "$choice" "$pair"
