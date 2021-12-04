@@ -4,6 +4,34 @@ CONFIG=~/.config/river/init
 
 FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d -w 50"
 
+RED=$'\e[1;31m'
+END=$'\e[0m'
+
+usage(){
+    echo "Usage: river_binds <MODE>"
+    echo "Searches binds or descriptions notifying the other one"
+    echo ""
+    echo "Modes:"
+    echo "  -b, --bind                 search binds => notify description"
+    echo "  -d, --description          search descriptions => notify bind"
+}
+
+[ $# -lt 1 ] && usage && exit
+
+case $1 in
+    --bind | -b)
+        MODE="bind"
+        ;;
+    --description | -d)
+        MODE="description"
+        ;;
+    *)
+        echo "${RED}Unknown option!${END}"
+        usage
+        exit 1
+        ;;
+esac
+
 descriptions=$(sed -n '/###/p' "$CONFIG" \
     | sed 's/^[ #]*//')
 
