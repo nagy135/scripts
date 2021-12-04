@@ -40,8 +40,7 @@ esac
         | sed 's/^\s*//' \
         | cut -d' ' -f4-5 \
         | sed 's/Mod1/Alt/' \
-        | sed 's/\$mod/Super/' \
-        | tr ' ' '+')
+        | sed 's/\$mod/Super/')
 [ $MODE == "description" ] \
     && lines=$(sed -n '/###/p' "$CONFIG" \
         | sed 's/^[ #]*//')
@@ -51,24 +50,21 @@ choice=$(echo "$lines" | $FUZZEL -P "Pick $MODE: " 2> /dev/null)
 [ -z "$choice" ] && exit 0
 
 # find matching line
-
 [ $MODE == "description" ] \
     && pair=$(sed -n "/$choice$/{n;p}" "$CONFIG"\
         | sed 's/riverctl map [a-zA-Z]*\s//' \
         | sed 's/Mod1/Alt/' \
         | sed 's/\$mod/Super/' \
         | cut -d' ' -f1-2 \
-        | tr ' ' '+'
     )
 [ $MODE == "bind" ] \
     && reverted=$(echo "$choice" \
         | sed 's/Super/$mod/' \
-        | sed 's/Alt/Mod1/' \
-        | tr '+' ' '
+        | sed 's/Alt/Mod1/'
     ) \
-    && echo $reverted \
-    && pair=$(sed -n "/$reverted/{x;p;d;}; x" "$CONFIG" \
+    && pair=$(sed -n "/$reverted /{x;p;d;}; x" "$CONFIG" \
         | sed 's/### //'
     )
 
+# notify result
 notify-send -t 3000 "$choice" "$pair"
