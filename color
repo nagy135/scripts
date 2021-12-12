@@ -11,5 +11,7 @@ arr['magenta']='#d13273'
    arr['cyan']='#2dc189'
   arr['white']='#b2d3d9'
 
-choice=$(echo "${!arr[@]}" | tr ' ' '\n' | bemenu --fn 'MesloLGS NF 14' -l 8 -i -p "Pick color")
+FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d"
+
+choice=$(echo "${!arr[@]}" | tr ' ' '\n' | $FUZZEL -P "Pick color: ")
 [[ ! -z $choice ]] && echo ${arr[$choice]} | tr -d '\n' | wl-copy
