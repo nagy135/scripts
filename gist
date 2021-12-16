@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# clipboard content => url with gist in clipboard
+# gh login, with access token https://github.com/settings/tokens
+
+wl-paste -n | gh gist create - 2> /dev/null | wl-copy
