@@ -9,7 +9,7 @@ if [[ $1 == 'kill' ]]; then
     [[ ! -z $chosen ]] && notify-send -i $ICON -t 2000 "Tmux session killed" && foot tmux kill-session -t "$chosen" &> /dev/null &
     exit 0
 elif [[ $1 == 'create' ]]; then
-    chosen=$(echo "" | $FUZZEL -l 0 -P 'Create tmux session: ')
+    chosen=$(echo "" | $FUZZEL -l 1 -P 'Create tmux session: ')
     if [[ ! -z $chosen ]]; then
         notify-send -i $ICON -t 2000 "Created" "$chosen"
         tmux new-session -d -s $chosen
