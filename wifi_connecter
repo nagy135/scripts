@@ -6,7 +6,7 @@ status_full=$(nmcli d status)
 status=$( echo "$status_full" | grep $interface | awk '{ print $3 }')
 if [[ $status == 'disconnected' ]]; then
     wifi_list=$(nmcli -t d wifi list --rescan yes | awk -F ':' '{print $2 " (" $6 "%)" }')
-    chosen=$( echo "$wifi_list" | dmenu -i -p 'Choose network to connect to')
+    chosen=$( echo "$wifi_list" | fuzzel -d -i -P 'Choose network to connect to')
     if [[ $chosen != '' ]]; then
         chosen=$(echo $chosen | sed 's/ (.*)//')
         # nmcli r wifi off; nmcli r wifi on;
@@ -24,7 +24,7 @@ if [[ $status == 'disconnected' ]]; then
     fi
 else
     connected=$( echo "$status_full" | grep $interface | awk '{ print $4 }')
-    choice=$( echo -e "Yes\nNo" | dmenu -i -p "Disconnect from $connected ?")
+    choice=$( echo -e "Yes\nNo" | fuzzel -d -i -P "Disconnect from $connected ?")
     if [[ $choice == '' || $choice == 'No' ]]; then
         exit 1
     else
