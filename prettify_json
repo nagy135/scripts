@@ -1,0 +1,8 @@
+#!/bin/bash
+
+formatted=$(wl-paste | jq)
+[ $? -gt 0 ] \
+    && notify-send -t 2000 "Json prettify" "parse error, exiting..." \
+    && exit 1
+
+echo "$formatted" | wl-copy -n
