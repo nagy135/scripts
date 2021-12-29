@@ -35,7 +35,7 @@ if [[ ! -f "$PIDPATH" ]]; then
   readonly TIME="$(date +%Y-%m-%d-%H-%M-%S)"
   readonly VIDPATH="$VIDEOSHOTDIR/rec-$TIME.mp4"
   (
-    wf-recorder -g "$(slurp)" -f "$VIDPATH" &
+    wf-recorder -aalsa_output.pci-0000_00_1f.3.analog-stereo -g "$(slurp)" -f "$VIDPATH" &
     echo "$!" >"$PIDPATH"
     echo "$VIDPATH" >"$RESOURCEPATH"
     notify-send "Start recording" "$VIDPATH"
