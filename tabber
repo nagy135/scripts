@@ -52,13 +52,13 @@ else
         read -r X Y W H < <(echo $slop)
         grim -g "${X},${Y} ${W}x${H}" $TMP_TAB
         if [[ -f $TMP_TAB ]]; then
-            name=$(echo "" | $FUZZEL -l 0 -P 'Name this tab image: ')
+            name=$(echo "" | $FUZZEL -l 1 -P 'Name this tab image: ')
             [[ ! -z $name ]] && mv $TMP_TAB $DIRECTORY/$name.png && notify-send -t 2000 -i none "TABBER" "tab saved as $DIRECTORY/$name.png"
         fi
     else
         slop=$(slurp -f "%x %y %w %h")
         read -r X Y W H < <(echo $slop)
-        subdirectory=$(echo "" | $FUZZEL -l 0 -P 'Name directory for this tab: ')
+        subdirectory=$(echo "" | $FUZZEL -l 1 -P 'Name directory for this tab: ')
         [ -z $subdirectory ] && exit 0
 
         mkdir $DIRECTORY/$subdirectory
