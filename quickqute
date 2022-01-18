@@ -3,7 +3,7 @@
 QUICKLIST=~/.scripts/resources/quicklist
 QUICKDATA=~/.scripts/resources/quickdata
 
-FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d"
+FUZZEL="fuzzel -l 10 -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d "
 
 if [[ $1 == '--reset' ]]; then
     echo -n "" > $QUICKLIST
@@ -22,7 +22,7 @@ fi
 
 [[ ! -s $QUICKDATA ]] && notify-send -t 2000 -i none "QuickQuite" "Empty database" && exit 1
 
-choice=$(cat $QUICKLIST | $FUZZEL -dmenu -i -P "QuickQute: ")
+choice=$(cat $QUICKLIST | $FUZZEL -P "QuickQute: ")
 if [[ $choice != '' ]]; then
     url=$(cat $QUICKDATA | grep "$choice" | cut -f 1 -d "-" | sed 's/^\s*//' | sed 's/\s*$//')
     qutebrowser "$url"
