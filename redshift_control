@@ -43,5 +43,4 @@ else
         value=$actual
     fi
 fi
-lego_refresh "redshift"
 redshift -P -O $value
