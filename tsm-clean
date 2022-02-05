@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 choices=$(tsm-seeding_rows)
 [[ $choices == '' ]] && exit 1
