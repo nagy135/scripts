@@ -3,14 +3,21 @@
 VIDEODIR="$HOME/Videos"
 [[ ! -e $VIDEODIR ]] && mkdir -p "$VIDEODIR"
 
+
 PIDPATH="/tmp/screencast.pid"
+AUDIO_OUTPUT=alsa_output.pci-0000_00_1f.3.analog-stereo.monitor
 
 if [[ ! -f "$PIDPATH" ]]; then
     TIME="$(date +%Y-%m-%d-%H-%M-%S)"
     VIDPATH="$VIDEODIR/rec-$TIME.mp4"
-    wf-recorder --audio=alsa_output.pci-0000_00_1f.3.analog-stereo.monitor -g "$(slurp)" -f "$VIDPATH" &
+
+    if [[ $1 == "-z" ]]; then
+        wf-recorder --audio=$AUDIO_OUTPUT -g "$(slurp)" -f "$VIDPATH" &
+    else
+        wf-recorder --audio=$AUDIO_OUTPUT -f "$VIDPATH" &
+    fi
     echo "$!" >"$PIDPATH"
-    notify-send "Started recording" "$VIDPATH"
+    notify-send -t 1000 "."
 else
     PID="$(cat $PIDPATH)"
     kill -SIGINT "$PID"
