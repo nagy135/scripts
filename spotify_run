@@ -1,10 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
-TYPE='spotify'
+TYPE='spotify-unwrapped'
 DESKTOP=9
 
-riverctl set-focused-tags $((1 << ($DESKTOP - 1)))
-[[ ! $(pidof $TYPE) ]] \
-    && (spotify &) \
-    && sleep 1 \
-    && riverctl toggle-float # TODO: this should be done through some "rule"
+[[ ! $(pgrep -f "$TYPE") ]] \
+    && (swaymsg "workspace $DESKTOP; exec spotify" &) \
+    || (swaymsg "workspace $DESKTOP"&)
