@@ -1,0 +1,8 @@
+#!/bin/sh
+
+DESKTOP=3
+COMMAND="foot tmux new-session -A -s stuff"
+
+[[ $(tmux list-clients | wc -l) -eq 0  ]] \
+    && (swaymsg "workspace $DESKTOP; exec $COMMAND" &) \
+    || (swaymsg "workspace $DESKTOP"&)
