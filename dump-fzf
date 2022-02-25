@@ -2,33 +2,52 @@
 
 declare -A projects
 
-SERVER_DUMP_NAME="dump.sql"
+# CREDENTIALS {{{
 
-read -r -d '' VAR << EOM
-vnagy@49.12.100.180
-crypton
-crypton_prod
-rvbAQdS5U7U2
+projects["project"]=$(cat << EOM
+user@host
+3337
+db-user
+db-name
+db-password
 EOM
-projects["crypton"]=$VAR
+)
 
+
+# }}} CREDENTIALS
 
 choice=$(echo ${!projects[@]} | tr ' ' '\n' | fzf)
-
 [ -z $choice ] && echo "nothing chosen...exiting" && exit 1
 
-lines="${projects['crypton']}"
+lines="${projects[$choice]}"
 
 location=$(echo "$lines" | sed -n '1p')
-user=$(echo "$lines" | sed -n '2p')
-db=$(echo "$lines" | sed -n '3p')
-pass=$(echo "$lines" | sed -n '4p')
+port=$(echo "$lines" | sed -n '2p')
+user=$(echo "$lines" | sed -n '3p')
+db=$(echo "$lines" | sed -n '4p')
+pass=$(echo "$lines" | sed -n '5p')
 
-arg="'MYSQL_PWD=\"$pass\" mysqldump -u $user $db > ~/$SERVER_DUMP_NAME'" 
+bridge_port="3333"
+socket_file="/tmp/db-backup-socket"
 
-echo "ssh $location $arg"
-echo "running dumping db"
+ssh -L \
+    "${bridge_port}:127.0.0.1:${port}" \
+    -M \
+    -S "$socket_file" \
+    -fNT "$location"
 
-ssh $location $arg && \
-echo "getting it back locally" && \
-scp $location:./$SERVER_DUMP_NAME .
+stamp=$(date "+%Y.%m.%d-%H.%M.%S")
+
+export PGPASSWORD="$pass"
+pg_dump \
+    -p "$bridge_port" \
+    -h localhost \
+    -U "$user" \
+    -d "$db" \
+    --file="${HOME}/${db}-${stamp}.sql" \
+    --column-inserts
+
+ssh \
+    -S "$socket_file" \
+    -O exit "$location"
+
