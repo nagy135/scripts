@@ -1,0 +1,12 @@
+#!/bin/sh
+
+COMMAND=
+TITLE="sway_scratchpad"
+[ $# -ge 2 ] && COMMAND=$2 && TITLE="$TITLE_$2"
+
+[[ ! $(pgrep -f "foot -T $TITLE") ]] \
+    && (swaymsg "\
+    exec foot -T $TITLE $COMMAND;\
+    for_window [title=$TITLE] move scratchpad;\
+    for_window [title=$TITLE] scratchpad show"&) \
+    || (swaymsg "[title=$TITLE] scratchpad show" &)
