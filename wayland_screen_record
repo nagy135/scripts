@@ -33,10 +33,11 @@ else
     kill -SIGINT "$PID"
 
     new_name=$(echo "" | $FUZZEL -l 0)
-    [[ ! -z "$new_name" ]] \
-        && dir_name="$(dirname $FILE_PATH)" \
-        && mv "$FILE_PATH" "$dir_name/$new_name.$EXT" \
-        && notify-send "Renamed:" "$dir_name/$new_name.$EXT"
+    [[ -z "$new_name" ]] && rm $FILE_PATH && exit 0
+
+    dir_name="$(dirname $FILE_PATH)"
+    mv "$FILE_PATH" "$dir_name/$new_name.$EXT"
+    notify-send "Renamed:" "$dir_name/$new_name.$EXT"
 
     notify-send "Stopped recording"
 fi
