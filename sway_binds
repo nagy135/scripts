@@ -36,28 +36,29 @@ esac
 
 # first prepare lines to search on
 [ $MODE == "bind" ] \
-    && lines=$(sed -n "/###/{n;p}" "$CONFIG")
+    && lines=$(sed -n "/###/{n;p}" "$CONFIG" \
+        | sed 's/bindsym\s//' \
+        | sed 's/\$mod/Super/' \
+        | cut -d' ' -f1 \
+        )
 [ $MODE == "description" ] \
     && lines=$(sed -n '/###/p' "$CONFIG" \
         | sed 's/^[ #]*//')
 
-
 # next, select
 choice=$(echo "$lines" | $FUZZEL -P "Pick $MODE: " 2> /dev/null)
 [ -z "$choice" ] && exit 0
-exit 0
 
 # find matching line
 [ $MODE == "description" ] \
     && pair=$(sed -n "/$choice$/{n;p}" "$CONFIG"\
-        | sed 's/riverctl map [a-zA-Z]*\s//' \
-        | sed 's/Mod1/Alt/' \
+        | sed 's/bindsym\s//' \
         | sed 's/\$mod/Super/' \
-        | cut -d' ' -f1-2 \
+        | cut -d' ' -f1 \
     )
 [ $MODE == "bind" ] \
     && reverted=$(echo "$choice" \
-        | sed 's/Super/$mod/' \
+        | sed 's/Super/\$mod/' \
         | sed 's/Alt/Mod1/'
     ) \
     && pair=$(sed -n "/$reverted /{x;p;d;}; x" "$CONFIG" \
