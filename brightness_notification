@@ -1,29 +1,30 @@
-#!/bin/bash
+#!/bin/sh
 
-fifo=/tmp/brightness.fifo
-pid_file=/tmp/brightness.pid
+# this script just makes low 10% to be stepped one by one
+# but only in decreasing direction, otherwise it jumps back to 10
+# instantly and then steps by 10
 
-if [[ $1 == '-init' ]]; then
-    mkfifo $fifo
-    chmod 766 $fifo
-    tail -f $fifo | xob -t 1000 -s brightness -m 100 &> /dev/null &
-    echo $! > $pid_file
-    exit 0
-elif [[ $1 == '-k' ]]; then
-    rm $fifo
-    kill $(cat $pid_file)
-    pkill -f "tail -f $fifo"
-    exit 0
-fi
+round() {
+    printf "%.${2:-0}f" "$1"
+}
 
-actual=$(xbacklight -get)
+actual=$(light -G)
+actual=$(round $actual)
 step=10
+small_step=1
+min_bound=10
 
-[ $actual -le 10 ] && step=1
-if [ $1 -gt 0 ]; then
-    [ $actual -lt 10 ] && xbacklight -set 10 || xbacklight -inc 10
-else
-    xbacklight -dec $step
-fi
+# always go to 10 when under 10 (going up)
+[ $actual -lt $min_bound ] \
+    && [ $1 -gt 0 ] \
+    && light -S 10 \
+    && exit 0
 
-echo $(xbacklight -get) > $fifo
+[ $((actual+$1)) -le $min_bound ] \
+    && step=$small_step
+
+[ $1 -gt 0 ] \
+    && new_val=$(($actual+$step)) \
+    || new_val=$(($actual-$step))
+
+light -S $new_val
