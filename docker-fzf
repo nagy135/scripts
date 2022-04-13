@@ -16,13 +16,13 @@ case $1 in
     logs|-l|--logs)
         tail_lines=300
         [ -n "$2" ] && tail_lines=$2
-        echo "${GREEN}running:${END} ${YELLOW}docker-compose ${BLUE}logs${END} ${YELLOW}-t -f --tail $tail_lines${END} ${RED}$choice${END} ${BLUE}bash${END}"
+        echo "${GREEN}running:${END} ${YELLOW}docker-compose ${BLUE}logs${END} ${YELLOW}-t -f --tail $tail_lines${END} ${RED}$choice${END}"
         docker-compose logs -t -f --tail $tail_lines $choice
         ;;
     *)
         echo "${GREEN}running:${END} ${YELLOW}docker-compose ${BLUE}exec${END} ${RED}$choice${END} ${BLUE}bash${END}"
-        docker-compose exec $choice bash \
-            || docker-compose exec $choice sh
+        docker-compose exec $choice bash
+        [ $? -ne 0 ] && ( echo "trying sh" && docker-compose exec $choice sh )
         ;;
 esac
 
