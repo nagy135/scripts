@@ -1,34 +1,11 @@
 #!/bin/sh
+PID_FILE=/tmp/redshift_pid
+FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d -w 50"
 
-value=0
-if [[ $1 == "-init" ]]; then
-    echo "6000" > /tmp/current_redshift
-    value=6000
-elif [[ $1 == '-day' ]] || [[ $1 == 'day' ]]; then
-    actual=6000
-    echo "$actual" > /tmp/current_redshift
-    value=$actual
-elif [[ $1 == '-night' ]] || [[ $1 == 'night' ]]; then
-    actual=2200
-    echo "$actual" > /tmp/current_redshift
-    value=$actual
-else
-    if [[ $1 -gt 0 ]]; then
-        actual=$(cat /tmp/current_redshift)
-        actual=$(($actual+200))
-        if [[ $actual -gt 6000 ]]; then
-            actual=6000
-        fi
-        echo "$actual" > /tmp/current_redshift
-        value=$actual
-    elif [[ $1 -lt 0 ]]; then
-        actual=$(cat /tmp/current_redshift)
-        actual=$(($actual-200))
-        if [[ $actual -lt 0 ]]; then
-            actual=0
-        fi
-        echo "$actual" > /tmp/current_redshift
-        value=$actual
-    fi
-fi
+[[ $1 -lt 0 ]] && ( kill $(cat $PID_FILE) &> /dev/null ; exit 0 )
+
+value=$($FUZZEL -d -P "Temp: " -l 0 < /dev/null)
+[ -z "$value" ] && exit 0
+
 gammastep -P -O $value
+echo -n "$?" > $PID_FILE
