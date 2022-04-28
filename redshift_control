@@ -2,10 +2,15 @@
 PID_FILE=/tmp/redshift_pid
 FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d -w 50"
 
-[[ $1 -lt 0 ]] && ( kill $(cat $PID_FILE) &> /dev/null ; exit 0 )
+[[ $1 -lt 0 ]] && kill $(cat $PID_FILE)  && rm $PID_FILE
+[[ $1 -lt 0 ]] && exit 0
 
 value=$($FUZZEL -d -P "Temp: " -l 0 < /dev/null)
 [ -z "$value" ] && exit 0
 
-gammastep -P -O $value
-echo -n "$?" > $PID_FILE
+[[ -f $PID_FILE ]] \
+    && kill $(cat $PID_FILE) \
+    && rm $PID_FILE
+
+gammastep -P -O $value &
+echo -n "$!" > $PID_FILE
