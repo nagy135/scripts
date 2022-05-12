@@ -1,7 +1,11 @@
 #!/bin/sh
 
 if [[ $1 == '-zone' ]]; then
-    grim -g "$(slurp)" - | wl-copy -t image/png
+    if [[ $2 == '-save' ]]; then
+        grim -g "$(slurp)" ~/screenshot_$(date '+%Y-%m-%d_%H:%M').png
+    else
+        grim -g "$(slurp)" - | wl-copy -t image/png
+    fi
 elif [[ $1 == '-save' ]]; then
     grim ~/screenshot_$(date '+%Y-%m-%d_%H:%M').png
 else
