@@ -1,0 +1,10 @@
+#!/bin/sh
+RUN_BOOL=/tmp/dpms_control
+
+[[ ! -f $RUN_BOOL ]] \
+    && swaymsg "output * dpms off" \
+    && touch $RUN_BOOL \
+    && exit 0
+
+rm $RUN_BOOL
+swaymsg "output * dpms on"
