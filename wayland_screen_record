@@ -7,7 +7,7 @@ VIDEODIR="$HOME/Videos"
 PIDPATH="/tmp/screencast.pid"
 TMP_FILE_PATH="/tmp/wf-record-path"
 AUDIO_OUTPUT=alsa_output.pci-0000_00_1f.3.analog-stereo.monitor
-FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d"
+
 EXT="mp4"
 
 if [[ ! -f "$PIDPATH" ]]; then
@@ -31,8 +31,7 @@ else
     rm "$TMP_FILE_PATH"
 
     kill -SIGINT "$PID"
-
-    new_name=$(echo "" | $FUZZEL -l 0)
+    new_name=$(rofi -theme "~/.config/rofi/input.rasi" -dmenu -i -p "Name it" < /dev/null)
     [[ -z "$new_name" ]] && rm $FILE_PATH && exit 0
 
     dir_name="$(dirname $FILE_PATH)"
