@@ -1,13 +1,50 @@
 #!/bin/sh
 
-if [[ $1 == '-zone' ]]; then
-    if [[ $2 == '-save' ]]; then
-        grim -g "$(slurp)" ~/screenshot_$(date '+%Y-%m-%d_%H:%M').png
-    else
+SAVE=0
+ZONE=0
+TIMESTAMP=0
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        -s|--save)
+            SAVE=1
+            ;;
+        -z|--zone)
+            ZONE=1
+            ;;
+        -t|--timestamp)
+            TIMESTAMP=1
+            ;;
+    esac
+    shift
+done
+
+# set -ex
+
+if [ ! $SAVE -eq 1 ]; then
+    if [ $ZONE -eq 1 ]; then
         grim -g "$(slurp)" - | wl-copy -t image/png
+    else
+        grim - | wl-copy -t image/png
     fi
-elif [[ $1 == '-save' ]]; then
-    grim ~/screenshot_$(date '+%Y-%m-%d_%H:%M').png
-else
-    grim - | wl-copy -t image/png
+    exit 0
 fi
+
+PLACEHOLDER="/tmp/temporary_screenshot.png"
+if [ $ZONE -eq 1 ]; then
+    grim -g "$(slurp)" $PLACEHOLDER
+else
+    grim $PLACEHOLDER
+fi
+
+name=$(rofi -theme "~/.config/rofi/input.rasi" -dmenu -i -p "Name it" < /dev/null)
+if [[ -z "$name" ]]; then
+    [ ! $TIMESTAMP -eq 1 ] && \
+        rm $PLACEHOLDER && \
+        exit 0
+
+    name="screenshot_$(date '+%Y-%m-%d_%H:%M')"
+fi
+
+name="$HOME/$name.png"
+mv $PLACEHOLDER $name
