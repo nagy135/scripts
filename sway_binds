@@ -4,7 +4,7 @@
 
 CONFIG=~/.config/sway/config
 
-FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d -w 50"
+PICKER="rofi -dmenu -i -p"
 
 RED=$'\e[1;31m'
 END=$'\e[0m'
@@ -46,7 +46,7 @@ esac
         | sed 's/^[ #]*//')
 
 # next, select
-choice=$(echo "$lines" | $FUZZEL -P "Pick $MODE: " 2> /dev/null)
+choice=$(echo "$lines" | $PICKER "Pick $MODE: " 2> /dev/null)
 [ -z "$choice" ] && exit 0
 
 # find matching line
