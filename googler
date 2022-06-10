@@ -1,0 +1,6 @@
+#!/bin/bash
+
+query=$(rofi -theme input.rasi -dmenu -i -p 'Google' < /dev/null)
+[ -z "$query" ] && exit 0
+query=$(echo "$query" | jq -sRr @uri)
+google-chrome-stable "https://www.google.com/search?q=${query}"
