@@ -35,7 +35,7 @@ case $1 in
         [[ -z $choice ]] && exit 0
 
         echo "${GREEN}running:${END} ${YELLOW}docker-compose ${BLUE}exec${END} ${RED}$choice${END} ${BLUE}bash${END}"
-        docker-compose exec $choice bash &> /dev/null
+        docker-compose exec $choice bash
         [ $? -ne 0 ] && ( echo "bash not found...trying sh" && docker-compose exec $choice sh )
         ;;
 esac
