@@ -9,20 +9,34 @@ END=$'\e[0m'
 lines=$(docker-compose ps --services)
 [ $? -gt 0 ] && exit 1
 
-choice=$(echo "$lines" | fzf -e)
-[[ -z $choice ]] && exit 0
 
 case $1 in
     logs|-l|--logs)
+
+        choice=$(echo "$lines" | fzf -e -m | tr '\n' ' ')
+        [[ -z $choice ]] && exit 0
+
         tail_lines=300
         [ -n "$2" ] && tail_lines=$2
         echo "${GREEN}running:${END} ${YELLOW}docker-compose ${BLUE}logs${END} ${YELLOW}-t -f --tail $tail_lines${END} ${RED}$choice${END}"
         docker-compose logs -t -f --tail $tail_lines $choice
         ;;
+    build|-b|--build)
+
+        choice=$(echo "$lines" | fzf -e -m | tr '\n' ' ')
+        [[ -z $choice ]] && exit 0
+
+        echo "${GREEN}running:${END} ${YELLOW}docker-compose ${BLUE}up -d --build${END} ${RED}$choice${END}"
+        docker-compose up -d --build $choice
+        ;;
     *)
+
+        choice=$(echo "$lines" | fzf -e)
+        [[ -z $choice ]] && exit 0
+
         echo "${GREEN}running:${END} ${YELLOW}docker-compose ${BLUE}exec${END} ${RED}$choice${END} ${BLUE}bash${END}"
-        docker-compose exec $choice bash
-        [ $? -ne 0 ] && ( echo "trying sh" && docker-compose exec $choice sh )
+        docker-compose exec $choice bash &> /dev/null
+        [ $? -ne 0 ] && ( echo "bash not found...trying sh" && docker-compose exec $choice sh )
         ;;
 esac
 
