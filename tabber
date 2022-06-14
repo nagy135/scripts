@@ -3,7 +3,7 @@
 DIRECTORY=~/Documents/Tabs
 TMP_TAB=/tmp/tabber.png
 MULTIPLE_DATA=/tmp/tabber_multiple_data
-FUZZEL="fuzzel -b 0b0b0bdd -t b2d3d9ff -s 19a85bff -S 0b0b0bff -m f9dc2bff -C 19a85bff -B 2 -d -w 40"
+PICKER="rofi -dmenu -i -p"
 
 if [[ $1 == "process" ]]; then
     [ ! -f $MULTIPLE_DATA ] && notify-send "Tabber" "set multiple data first!" && exit 1
@@ -44,7 +44,7 @@ elif [[ $1 == "grab" ]]; then
     grim -g "$geometry" $DIRECTORY/$subdirectory/$order.png
     notify-send -i 'none' -t 300 "Tabber" "piece captured"
 else
-    choice=$(echo -e "single\nmultiple" | $FUZZEL -l 2)
+    choice=$(echo -e "single\nmultiple" | $PICKER "mode: ")
     [ -z $choice ] && exit 0
 
     if [[ $choice == "single" ]]; then
@@ -52,13 +52,13 @@ else
         read -r X Y W H < <(echo $slop)
         grim -g "${X},${Y} ${W}x${H}" $TMP_TAB
         if [[ -f $TMP_TAB ]]; then
-            name=$(echo "" | $FUZZEL -l 1 -P 'Name this tab image: ')
+            name=$($PICKER "Name tab image: " -theme "~/.config/rofi/input.rasi" < /dev/null)
             [[ ! -z $name ]] && mv $TMP_TAB $DIRECTORY/$name.png && notify-send -t 2000 -i none "TABBER" "tab saved as $DIRECTORY/$name.png"
         fi
     else
         slop=$(slurp -f "%x %y %w %h")
         read -r X Y W H < <(echo $slop)
-        subdirectory=$(echo "" | $FUZZEL -l 1 -P 'Name directory for this tab: ')
+        subdirectory=$($PICKER "Name directory for this tab: " -theme "~/.config/rofi/input.rasi" < /dev/null)
         [ -z $subdirectory ] && exit 0
 
         mkdir $DIRECTORY/$subdirectory
