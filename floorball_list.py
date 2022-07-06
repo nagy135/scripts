@@ -33,7 +33,8 @@ def print_table(mems: List[str], head: Union[str, None]):
         member = mems[i]
         member_parts = member.split()
         member = f'{member_parts[0].capitalize()} {member_parts[1][0].upper()}.'
-        print(f'{i+1}. {member}')
+        index = str(i+1).rjust(2, ' ')
+        print(f'{index}. {member}')
 
 if len(sys.argv) < 2:
     usage()
