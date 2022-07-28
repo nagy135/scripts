@@ -27,13 +27,14 @@ def print_table(mems: List[str], head: Union[str, None]):
     if head is not None:
         print(head)
     for i in range(N):
-        if i >= len(mems):
-            print(f'{i+1}.')
-            continue
-        member = mems[i]
-        member_parts = member.split()
-        member = f'{member_parts[0].capitalize()} {member_parts[1][0].upper()}.'
         index = str(i+1).rjust(2, ' ')
+        if i >= len(mems):
+            print(f'{index}.')
+            continue
+        member = mems[i].strip()
+        member_parts = member.split()
+        if len(member_parts) == 2:
+            member = f'{member_parts[0].capitalize()} {member_parts[1][0].upper()}.'
         print(f'{index}. {member}')
 
 if len(sys.argv) < 2:
@@ -75,8 +76,8 @@ for i, line in enumerate(sys.stdin):
         if first_line_re.match(line) is None:
             header = line
             continue
-    parts = line.split(' ', 1)
-    if len(parts) < 2:
+    parts = line.split('.', 1)
+    if len(parts) < 2 or parts[1] == '':
         continue
     members.append(parts[1])
 
