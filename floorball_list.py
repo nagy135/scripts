@@ -22,6 +22,7 @@ def usage():
     print("  -p, --prettify             just reformat table to fixed form")
     print("  -a, --add    [name]        add new member to game")
     print("  -r, --remove [index]       remove member by his index")
+    print("  -s, --skip [N]             ignore first N lines")
 
 def print_table(mems: List[str], head: Union[str, None]):
     if head is not None:
@@ -53,6 +54,14 @@ elif '-r' in sys.argv or '--remove' in sys.argv:
 elif '-p' in sys.argv or '--prettify' in sys.argv:
     MODE = Modes.PRETTIFY
 
+SKIP = 0
+if '-s' in sys.argv or '--skip' in sys.argv:
+    i = sys.argv.index('-s') if '-s' in sys.argv else sys.argv.index('--skip')
+    if len(sys.argv) < i + 2:
+        print('Provide argument for skip lines')
+        sys.exit(1)
+    SKIP = int(sys.argv[i+1])
+
 if MODE == Modes.NONE:
     print('No mode chosen!')
     usage()
@@ -70,6 +79,9 @@ if MODE in [Modes.REMOVE, Modes.ADD]:
 members: List[str] = []
 header: Union[str, None] = None
 for i, line in enumerate(sys.stdin):
+    if SKIP > 0:
+        SKIP -= 1
+        continue
     line = line.strip()
     if i == 0:
         first_line_re = re.compile(r'^\s*\d')
