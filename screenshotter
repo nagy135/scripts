@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 SAVE=0
 ZONE=0
