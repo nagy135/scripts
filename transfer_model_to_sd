@@ -4,19 +4,45 @@ ROOT=~/Documents/gcodes
 PARTITION=/dev/sda1
 MOUNTPOINT=/mnt
 
-chosen=$(ls $ROOT | rofi -dmenu -i -p 'Choose gcode')
+keep_files=(
+    "calibration.gcode"
+    "arch_coin.gcode"
+)
+
+# select files to copy
+chosen=$(ls $ROOT | rofi -dmenu -i -p -multi-select 'Choose gcode')
 [[ -z $chosen ]] \
     && echo "[INFO] nothing chosen exiting..." \
     && exit 0
 
-full_path="$ROOT/$chosen"
+# prepare flags to exclude these files from removing
+not_find_flags=""
+echo "[INFO] removing all gcodes from sd card except:"
+for keep_file in ${keep_files[@]}; do
+    echo "$keep_file"
+    not_find_flags="$not_find_flags -not -name $keep_file"
+done
 
+# check if sd present, then mount
 [ ! -b $PARTITION ] \
-    && echo "[ERROR] No sda1 present" \
+    && echo "[ERROR] No $PARTITION plugged in" \
     && exit 0
-
 sudo mount $PARTITION $MOUNTPOINT
-sudo cp $full_path $MOUNTPOINT
+
+# remove whats not to keep
+sudo find $MOUNTPOINT \
+    -name "*.gcode" \
+    -and $not_find_flags \
+    -exec rm {} \;
+
+# transfer what was chosen
+while read -r chosen_file; do
+    echo "[INFO] transferring $chosen_file"
+    full_path="$ROOT/$chosen_file"
+    sudo cp $full_path $MOUNTPOINT
+done <<< "$chosen"
+
+# unmount
 sudo umount $PARTITION
 
 echo "[INFO] Done"
