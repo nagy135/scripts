@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DESKTOP=3
+DESKTOP=2
 COMMAND="foot tmux new-session -A -s stuff"
 
 [[ $(tmux list-clients | wc -l) -eq 0  ]] \
