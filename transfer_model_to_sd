@@ -1,0 +1,22 @@
+#!/bin/bash
+
+ROOT=~/Documents/gcodes
+PARTITION=/dev/sda1
+MOUNTPOINT=/mnt
+
+chosen=$(ls $ROOT | rofi -dmenu -i -p 'Choose gcode')
+[[ -z $chosen ]] \
+    && echo "[INFO] nothing chosen exiting..." \
+    && exit 0
+
+full_path="$ROOT/$chosen"
+
+[ ! -b $PARTITION ] \
+    && echo "[ERROR] No sda1 present" \
+    && exit 0
+
+sudo mount $PARTITION $MOUNTPOINT
+sudo cp $full_path $MOUNTPOINT
+sudo umount $PARTITION
+
+echo "[INFO] Done"
