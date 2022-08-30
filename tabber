@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 DIRECTORY=~/Documents/Tabs
 TMP_TAB=/tmp/tabber.png
