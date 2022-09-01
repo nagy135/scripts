@@ -5,8 +5,8 @@ PARTITION=/dev/sda1
 MOUNTPOINT=/mnt
 
 keep_files=(
-    "calibration.gcode"
-    "arch_coin.gcode"
+    "frame_calibration.gcode"
+    "boxes_calibration.gcode"
 )
 
 # select files to copy
