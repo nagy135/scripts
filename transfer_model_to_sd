@@ -34,6 +34,7 @@ if [[ $1 == "-r" ]]; then # remove all previous files
     sudo find $MOUNTPOINT \
         -name "*.gcode" \
         -and $not_find_flags \
+        -exec echo "[INFO] removing" {} \;
         -exec rm {} \;
 fi
 
