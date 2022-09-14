@@ -10,7 +10,7 @@ keep_files=(
 )
 
 # select files to copy
-chosen=$(ls $ROOT | rofi -dmenu -i -p -multi-select 'Choose gcode')
+chosen=$(ls -t $ROOT | rofi -dmenu -i -p -multi-select 'Choose gcode')
 [[ -z $chosen ]] \
     && echo "[INFO] nothing chosen exiting..." \
     && exit 0
@@ -34,7 +34,7 @@ if [[ $1 == "-r" ]]; then # remove all previous files
     sudo find $MOUNTPOINT \
         -name "*.gcode" \
         -and $not_find_flags \
-        -exec echo "[INFO] removing" {} \;
+        -exec echo "[INFO] removing" {} \; \
         -exec rm {} \;
 fi
 
