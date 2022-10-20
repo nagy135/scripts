@@ -9,6 +9,8 @@ keep_files=(
     "boxes_calibration.gcode"
 )
 
+SEPARATOR="#################################"
+
 # select files to copy
 chosen=$(ls -t $ROOT | rofi -dmenu -i -p -multi-select 'Choose gcode')
 [[ -z $chosen ]] \
@@ -24,11 +26,13 @@ sudo mount $PARTITION $MOUNTPOINT
 if [[ $1 == "-r" ]]; then # remove all previous files
     # prepare flags to exclude these files from removing
     not_find_flags=""
+    keep_files=""
     echo "[INFO] removing all gcodes from sd card except:"
     for keep_file in ${keep_files[@]}; do
-        echo "$keep_file"
+        keep_files="$keep_files $keep_file"
         not_find_flags="$not_find_flags -not -name $keep_file"
     done
+    echo $SEPARATOR
 
     # remove whats not to keep
     sudo find $MOUNTPOINT \
