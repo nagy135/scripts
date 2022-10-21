@@ -26,10 +26,9 @@ sudo mount $PARTITION $MOUNTPOINT
 if [[ $1 == "-r" ]]; then # remove all previous files
     # prepare flags to exclude these files from removing
     not_find_flags=""
-    keep_files=""
     echo "[INFO] removing all gcodes from sd card except:"
     for keep_file in ${keep_files[@]}; do
-        keep_files="$keep_files $keep_file"
+        echo "    $keep_file"
         not_find_flags="$not_find_flags -not -name $keep_file"
     done
     echo $SEPARATOR
@@ -42,9 +41,10 @@ if [[ $1 == "-r" ]]; then # remove all previous files
         -exec rm {} \;
 fi
 
+echo "[INFO] transferring:"
 # transfer what was chosen
 while read -r chosen_file; do
-    echo "[INFO] transferring $chosen_file"
+    echo "    $chosen_file"
     full_path="$ROOT/$chosen_file"
     sudo cp $full_path $MOUNTPOINT
 done <<< "$chosen"
