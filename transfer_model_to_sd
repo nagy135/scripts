@@ -7,6 +7,8 @@ MOUNTPOINT=/mnt
 keep_files=(
     "frame_calibration.gcode"
     "boxes_calibration.gcode"
+    "benchy.gcode"
+    "cart_coin_bundle.gcode"
 )
 
 SEPARATOR="#################################"
