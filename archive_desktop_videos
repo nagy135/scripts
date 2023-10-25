@@ -1,0 +1,15 @@
+#!/bin/bash
+
+shopt -s nullglob
+
+for file in ~/Desktop/*; do
+	mpv "$file"
+	sleep 1
+	name=$(echo "." | choose -n 0 -u -m)
+	[ -z "$name" ] && exit 1
+	osascript -e "display notification \"$name\" with title \"Renamed to\""
+	sleep 1
+	ffmpeg -i "$file" ~/Videos/"$name".mp4
+	rm "$file"
+done
+osascript -e "display notification \"All cleaned up\" with title \"Done\""
