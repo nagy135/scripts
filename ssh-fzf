@@ -25,48 +25,50 @@ case $1 in
 esac
 
 # select connection
-choice=$(echo ${!conn_pairs[@]} | tr ' ' '\n' | fzf --height 50%)
+choice=$(echo "$conn_pairs" | cut -d ' ' -f1 | fzf --height 50%)
 [ -z $choice ] && echo "nothing chosen, exiting..." && exit 1
 
 # if multiuser, select using fzf again
-IFS=";" read -r -a user_selection <<< "${conn_pairs[${choice}]}"
-if [[ ${#user_selection[@]} -gt 1 ]]; then
-    user=$(echo ${user_selection[@]} | tr ' ' '\n' | sed 's/@.*$//'| fzf --height 50%)
-    [ -z $user ] && echo "no user chosen, exiting..." && exit 1
-    connection=$(echo ${user_selection[@]} | tr ' ' '\n' | grep $user)
-else
-    connection="${user_selection[0]}"
-fi
+# IFS=";" read -r -a user_selection <<< "${conn_pairs[${choice}]}"
+# if [[ ${#user_selection[@]} -gt 1 ]]; then
+#     user=$(echo ${user_selection[@]} | tr ' ' '\n' | sed 's/@.*$//'| fzf --height 50%)
+#     [ -z $user ] && echo "no user chosen, exiting..." && exit 1
+#     connection=$(echo ${user_selection[@]} | tr ' ' '\n' | grep $user)
+# else
+#     connection="${user_selection[0]}"
+# fi
 
-colorized=$(colorize $connection)
+target=$(echo "$conn_pairs" | sed -n "/${choice}/p" | cut -d ' ' -f2)
+
+colorized=$(colorize $target)
 
 # if copy to clipboard
-if [ $CLIP -eq 1 ]; then
-    echo -n ${conn_pairs[${choice}]} | xclip -sel clipboard
-    exit
-fi
+# if [ $CLIP -eq 1 ]; then
+#     echo -n ${conn_pairs[${choice}]} | xclip -sel clipboard
+#     exit
+# fi
 
 # if simple connection
 if [ $SCP -eq 0 ]; then
     echo "${GREEN}running${END} ${BLUE}ssh${END} ${colorized}${END}"
-    ssh $connection
+    ssh $target
     exit
 fi
 
 # else scp transfer
-echo "1 : local => server"
-echo "2 : server => local"
-echo -n "Direction? (write number): "
-read DIRECTION
-echo -n "From: "
-read FROM
-echo -n "To: "
-read TO
-
-[ $DIRECTION -eq 1 ] \
-    && echo "${GREEN}running${END} ${BLUE}scp -r $FROM ${colorized}:$TO${END}" \
-    || echo "${GREEN}running${END} ${BLUE}scp -r ${colorized}:$FROM $TO${END}"
-
-[ $DIRECTION -eq 1 ] \
-    && scp -r $FROM $connection:$TO \
-    || scp -r $connection:$FROM $TO
+# echo "1 : local => server"
+# echo "2 : server => local"
+# echo -n "Direction? (write number): "
+# read DIRECTION
+# echo -n "From: "
+# read FROM
+# echo -n "To: "
+# read TO
+#
+# [ $DIRECTION -eq 1 ] \
+#     && echo "${GREEN}running${END} ${BLUE}scp -r $FROM ${colorized}:$TO${END}" \
+#     || echo "${GREEN}running${END} ${BLUE}scp -r ${colorized}:$FROM $TO${END}"
+#
+# [ $DIRECTION -eq 1 ] \
+#     && scp -r $FROM $connection:$TO \
+#     || scp -r $connection:$FROM $TO
