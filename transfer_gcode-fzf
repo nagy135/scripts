@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ROOT=~/3d/gcodes
-DESTINATION="/Volumes/NO NAME"
+DESTINATION="/Volumes/NO NAME 1"
 
 keep_files=(
     "frame_calibration.gcode"
@@ -25,7 +25,6 @@ choice=$(ls -t $ROOT | fzf -e -m)
 
 if [[ $1 == "-r" ]]; then # remove all previous files
     # prepare flags to exclude these files from removing
-    not_find_flags=""
     echo "[INFO] removing all gcodes from sd card except:"
     for keep_file in ${keep_files[@]}; do
         echo "    $keep_file"
@@ -34,7 +33,7 @@ if [[ $1 == "-r" ]]; then # remove all previous files
     echo $SEPARATOR
 
     # remove whats not to keep
-    sudo find "$DESTINATION" \
+    sudo gfind "$DESTINATION" \
         -name "*.gcode" \
         -and $not_find_flags \
         -exec echo "[INFO] removing" {} \; \
@@ -44,9 +43,11 @@ fi
 echo "[INFO] transferring:"
 # transfer what was chosen
 while read -r chosen_file; do
-    echo "    $chosen_file"
     full_path="$ROOT/$chosen_file"
     sudo cp "$full_path" "$DESTINATION"
+    echo "    $chosen_file"
 done <<< "$choice"
+
+diskutil unmountDisk $(diskutil list "NO NAME" | head -n 1 | cut -d ' ' -f1)
 
 echo "[INFO] Done"
