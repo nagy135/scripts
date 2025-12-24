@@ -1,27 +1,32 @@
 #!/bin/bash
 
-read -r -d '' conn_pairs <<'EOF'
+conn_pairs=$(cat <<'EOF'
 biologia root@78.47.31.136
-swissfunds_dev vnagy@49.12.100.180
-swissfunds_prod svycarskapujcka-new@217.16.184.94
+swissfunds_dev|sf_dev vnagy@49.12.100.180
+swissfunds_prod|sf_prod svycarskapujcka-new@217.16.184.94
 og_dev vnagy@142.93.38.79
 og_prod vnagy@206.189.116.148
 dev vnagy@157.230.108.64
 caresee vnagy@165.22.85.171
 wishmaker vnagy@116.203.48.101
-goldguard_dev vnagy@goldguard.bywazzupa.com
-goldguard_prod ubuntu@35.158.187.52
+goldguard_dev|gg_dev vnagy@goldguard.bywazzupa.com
+goldguard_prod|gg_prod ubuntu@35.158.187.52
 chcemauto root@88.99.173.121
 infiniter root@159.89.12.44
-nixos_infiniter infiniter@206.189.62.232
-nixos_root root@206.189.62.232
+nixos_infiniter infiniter@91.99.204.136
+nixos_root root@91.99.204.136
 pi pi@192.168.210.165
-personal_mdm_logistics_root root@165.227.164.205
-personal_mdm_logistics_developer developer@165.227.164.205
-broken_mdm_logistics_root root@46.101.144.33
-broken_mdm_logistics_developer developer@46.101.144.33
-prod_mdm_logistics_developer developer@46.101.240.200
-prod_mdm_logistics_root root@46.101.240.200
-hetzner_mdm_root root@116.203.184.95
-hetzner_mdm_developer developer@116.203.184.95
+personal_mdm_logistics_root|pmdm_root root@165.227.164.205
+personal_mdm_logistics_developer|pmdm_dev developer@165.227.164.205
+broken_mdm_logistics_root|bmdm_root root@46.101.144.33
+broken_mdm_logistics_developer|bmdm_dev developer@46.101.144.33
+prod_mdm_logistics_developer|prodmdm_dev developer@46.101.240.200
+prod_mdm_logistics_root|prodmdm_root root@46.101.240.200
+hetzner_mdm_root|hmdm_root|warehouse_root root@116.203.184.95
+hetzner_mdm_developer|hmdm_dev|warehouse_developer developer@116.203.184.95
 EOF
+)
+
+
+# old_nixos_infiniter infiniter@49.13.139.140
+# old_nixos_root root@49.13.139.140
