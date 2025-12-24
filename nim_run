@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+# Absolute path of the Nim file passed in
+NIM_FILE="$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
+
+# Shift so remaining args go to the Nim program
+shift
+
+exec nim r --hints:off --verbosity:0 "$NIM_FILE" "$@"
