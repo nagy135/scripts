@@ -13,12 +13,8 @@ colorize(){
 directory="$(dirname "$(realpath "$0")")"
 source $directory/resources/connections
 
-SCP=0
 CLIP=0
 case $1 in
-    --scp | -s)
-        SCP=1
-        ;;
     --clip | -c)
         CLIP=1
         ;;
@@ -36,33 +32,11 @@ target=$(echo "$conn_pairs" | awk -v choice="$choice" '{
 
 colorized=$(colorize $target)
 
-# if copy to clipboard
-# if [ $CLIP -eq 1 ]; then
-#     echo -n ${conn_pairs[${choice}]} | xclip -sel clipboard
-#     exit
-# fi
-
-# if simple connection
-if [ $SCP -eq 0 ]; then
-    echo "${GREEN}running${END} ${BLUE}ssh${END} ${colorized}${END}"
-    ssh $target
+if [ $CLIP -eq 1 ]; then
+    echo -n "$target" | pbcopy
+    echo "Copied to clipboard: $target"
     exit
 fi
 
-# else scp transfer
-# echo "1 : local => server"
-# echo "2 : server => local"
-# echo -n "Direction? (write number): "
-# read DIRECTION
-# echo -n "From: "
-# read FROM
-# echo -n "To: "
-# read TO
-#
-# [ $DIRECTION -eq 1 ] \
-#     && echo "${GREEN}running${END} ${BLUE}scp -r $FROM ${colorized}:$TO${END}" \
-#     || echo "${GREEN}running${END} ${BLUE}scp -r ${colorized}:$FROM $TO${END}"
-#
-# [ $DIRECTION -eq 1 ] \
-#     && scp -r $FROM $connection:$TO \
-#     || scp -r $connection:$FROM $TO
+echo "${GREEN}running${END} ${BLUE}ssh${END} ${colorized}${END}"
+ssh $target
