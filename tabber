@@ -1,67 +1,81 @@
 #!/bin/bash
 
-DIRECTORY=~/Documents/Tabs
-TMP_TAB=/tmp/tabber.png
-MULTIPLE_DATA=/tmp/tabber_multiple_data
-PICKER="rofi -dmenu -i -p"
+DIRECTORY=~/Tabs
+TABBER_DATA=/tmp/tabber_data
+
+notify_user() {
+    osascript -e "display notification \"$2\" with title \"$1\""
+}
 
 if [[ $1 == "process" ]]; then
-    [ ! -f $MULTIPLE_DATA ] && notify-send "Tabber" "set multiple data first!" && exit 1
-    subdirectory=$(cat $MULTIPLE_DATA | sed -n '2p')
-    height=$(cat $MULTIPLE_DATA | sed -n '1p' | sed 's/[^x]*x//')
-    per_page=$((1920/$height))
-    total=$(ls $DIRECTORY/$subdirectory | wc -l)
-
-    # joining of pieces
-    mkdir -p $DIRECTORY/$subdirectory/pages
+    subdir=""
+    per_page=4
+    
+    if [ -n "$2" ]; then
+        if [ -d "$DIRECTORY/$2" ]; then
+            subdir=$2
+            per_page=${3:-4}
+        else
+            per_page=$2
+            if [ -f "$TABBER_DATA" ]; then
+                subdir=$(cat "$TABBER_DATA")
+            else
+                subdir=$(osascript -e 'tell application "System Events" to display dialog "Tabs directory name:" default answer ""' -e 'text returned of result' 2>/dev/null)
+                [ -z "$subdir" ] && exit 0
+            fi
+        fi
+    else
+        if [ -f "$TABBER_DATA" ]; then
+            subdir=$(cat "$TABBER_DATA")
+        else
+            subdir=$(osascript -e 'tell application "System Events" to display dialog "Tabs directory name:" default answer ""' -e 'text returned of result' 2>/dev/null)
+            [ -z "$subdir" ] && exit 0
+        fi
+    fi
+    
+    files=$(ls "$DIRECTORY/$subdir"/*.png 2>/dev/null | wc -l)
+    [ $files -eq 0 ] && notify_user "Tabber" "No images in $subdir!" && exit 1
+    
+    mkdir -p "$DIRECTORY/$subdir/pages"
     array=()
     i=0
     page=1
-    for file_i in $(seq 1 $total); do
+    
+    for file in $(ls -1 "$DIRECTORY/$subdir"/*.png | sort -V); do
         i=$((i+1))
-        if [ $i -ge $per_page ]; then
+        if [ $i -gt $per_page ]; then
             i=1
-
-            convert -append ${array[@]} $DIRECTORY/$subdirectory/pages/output-$page.png
-
+            if [ ${#array[@]} -gt 0 ]; then
+                magick convert -append -resize 1200x "${array[@]}" "$DIRECTORY/$subdir/pages/output-$page.png"
+            fi
             page=$((page+1))
             array=()
         fi
-        array+=" $DIRECTORY/$subdirectory/${file_i}.png"
+        array+=("$file")
     done
-
-    # last incomplete page
-    if [[ ${#array[@]} -gt 0 ]]; then
-        convert -append ${array[@]} $DIRECTORY/$subdirectory/pages/output-$page.png
+    
+    if [ ${#array[@]} -gt 0 ]; then
+        magick convert -append -resize 1200x "${array[@]}" "$DIRECTORY/$subdir/pages/output-$page.png"
     fi
-    rm $MULTIPLE_DATA
-elif [[ $1 == "grab" ]]; then
-    [ ! -f $MULTIPLE_DATA ] && notify-send "Tabber" "set multiple data first!" && exit 1
-    geometry=$(cat $MULTIPLE_DATA | sed -n '1p')
-    subdirectory=$(cat $MULTIPLE_DATA | sed -n '2p')
-    order=$(ls $DIRECTORY/$subdirectory | wc -l)
-    order=$((order+1))
-    grim -g "$geometry" $DIRECTORY/$subdirectory/$order.png
-    notify-send -i 'none' -t 300 "Tabber" "piece captured"
+    
+    rm -f "$TABBER_DATA"
+    notify_user "Tabber" "Done! $per_page per page"
+
 else
-    choice=$(echo -e "single\nmultiple" | $PICKER "mode: ")
-    [ -z $choice ] && exit 0
-
-    if [[ $choice == "single" ]]; then
-        slop=$(slurp -f "%x %y %w %h")
-        read -r X Y W H < <(echo $slop)
-        grim -g "${X},${Y} ${W}x${H}" $TMP_TAB
-        if [[ -f $TMP_TAB ]]; then
-            name=$($PICKER "Name tab image: " -theme "~/.config/rofi/input.rasi" < /dev/null)
-            [[ ! -z $name ]] && mv $TMP_TAB $DIRECTORY/$name.png && notify-send -t 2000 -i none "TABBER" "tab saved as $DIRECTORY/$name.png"
-        fi
-    else
-        slop=$(slurp -f "%x %y %w %h")
-        read -r X Y W H < <(echo $slop)
-        subdirectory=$($PICKER "Name directory for this tab: " -theme "~/.config/rofi/input.rasi" < /dev/null)
-        [ -z $subdirectory ] && exit 0
-
-        mkdir $DIRECTORY/$subdirectory
-        echo -e "${X},${Y} ${W}x${H}\n${subdirectory}" > $MULTIPLE_DATA
+    if [ ! -f "$TABBER_DATA" ]; then
+        subdir=$(osascript -e 'tell application "System Events" to display dialog "Tabs directory name:" default answer ""' -e 'text returned of result' 2>/dev/null)
+        [ -z "$subdir" ] && exit 0
+        mkdir -p "$DIRECTORY/$subdir"
+        echo "$subdir" > "$TABBER_DATA"
+    fi
+    
+    subdir=$(cat "$TABBER_DATA")
+    count=$(ls "$DIRECTORY/$subdir"/*.png 2>/dev/null | wc -l)
+    order=$((count+1))
+    
+    /usr/sbin/screencapture -i "$DIRECTORY/$subdir/$order.png" 2>/dev/null || exit 0
+    
+    if [ -f "$DIRECTORY/$subdir/$order.png" ]; then
+        notify_user "Tabber" "Captured ($order)"
     fi
 fi
