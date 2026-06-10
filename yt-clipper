@@ -1,0 +1,235 @@
+#!/bin/bash
+
+set -euo pipefail
+
+usage() {
+    cat <<'EOF'
+Usage:
+  yt-clipper [-c] -i URL -f START -t END OUTPUT_FILE
+
+Example:
+  yt-clipper -i https://www.youtube.com/watch?v=IMBeig5RD0I -f 3:22 -t 3:26 clip.mp4
+  yt-clipper -c -i https://www.youtube.com/watch?v=IMBeig5RD0I -f 1:00 -t 1:05 clip.mp4
+
+Notes:
+  - START and END can be in SS, MM:SS, or HH:MM:SS format.
+  - Requires: yt-dlp, ffmpeg
+  - -c copies the created file itself to the macOS clipboard.
+EOF
+}
+
+require_cmd() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        printf 'Missing required command: %s\n' "$1" >&2
+        exit 1
+    fi
+}
+
+to_seconds() {
+    local value="$1"
+    local parts_count
+    local hours=0
+    local minutes=0
+    local seconds=0
+
+    IFS=':' read -r -a parts <<< "$value"
+    parts_count=${#parts[@]}
+
+    case "$parts_count" in
+        1)
+            seconds=${parts[0]}
+            ;;
+        2)
+            minutes=${parts[0]}
+            seconds=${parts[1]}
+            ;;
+        3)
+            hours=${parts[0]}
+            minutes=${parts[1]}
+            seconds=${parts[2]}
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+
+    [[ "$hours" =~ ^[0-9]+$ ]] || return 1
+    [[ "$minutes" =~ ^[0-9]+$ ]] || return 1
+    [[ "$seconds" =~ ^[0-9]+$ ]] || return 1
+
+    printf '%d\n' "$((10#$hours * 3600 + 10#$minutes * 60 + 10#$seconds))"
+}
+
+extract_video_id() {
+    local url="$1"
+    local query_string
+    local pair
+
+    query_string=${url#*\?}
+
+    if [[ "$query_string" != "$url" ]]; then
+        IFS='&' read -r -a query_parts <<< "$query_string"
+        for pair in "${query_parts[@]}"; do
+            if [[ "$pair" == v=* ]]; then
+                printf '%s\n' "${pair#v=}"
+                return 0
+            fi
+        done
+    fi
+
+    return 1
+}
+
+input_url=""
+from_time=""
+to_time=""
+copy_to_clipboard=0
+
+while getopts ":ci:f:t:h" opt; do
+    case "$opt" in
+        c) copy_to_clipboard=1 ;;
+        i) input_url="$OPTARG" ;;
+        f) from_time="$OPTARG" ;;
+        t) to_time="$OPTARG" ;;
+        h)
+            usage
+            exit 0
+            ;;
+        :)
+            printf 'Option -%s requires a value.\n' "$OPTARG" >&2
+            usage >&2
+            exit 1
+            ;;
+        \?)
+            printf 'Unknown option: -%s\n' "$OPTARG" >&2
+            usage >&2
+            exit 1
+            ;;
+    esac
+done
+
+shift $((OPTIND - 1))
+
+if [[ -z "$input_url" || -z "$from_time" || -z "$to_time" || $# -ne 1 ]]; then
+    usage >&2
+    exit 1
+fi
+
+output_file="$1"
+
+require_cmd yt-dlp
+require_cmd ffmpeg
+
+if (( copy_to_clipboard )); then
+    require_cmd osascript
+fi
+
+from_seconds=$(to_seconds "$from_time") || {
+    printf 'Invalid start time: %s\n' "$from_time" >&2
+    exit 1
+}
+
+to_seconds_value=$(to_seconds "$to_time") || {
+    printf 'Invalid end time: %s\n' "$to_time" >&2
+    exit 1
+}
+
+if (( to_seconds_value <= from_seconds )); then
+    printf 'End time must be greater than start time.\n' >&2
+    exit 1
+fi
+
+duration=$((to_seconds_value - from_seconds))
+cache_dir="/tmp/yt-clipper-cache"
+video_id=$(extract_video_id "$input_url") || {
+    printf 'Could not extract the v= video id from URL.\n' >&2
+    exit 1
+}
+
+mkdir -p "$cache_dir"
+
+downloaded_file="$cache_dir/$video_id.%(ext)s"
+merged_file="$cache_dir/$video_id.mp4"
+used_cache=0
+
+format_selector='bestvideo[height=1080]+bestaudio/best[height=1080]/bestvideo[height=720]+bestaudio/best[height=720]/best'
+
+if [[ ! -s "$merged_file" ]]; then
+    yt-dlp \
+        --no-playlist \
+        --merge-output-format mp4 \
+        -f "$format_selector" \
+        -o "$downloaded_file" \
+        "$input_url"
+else
+    used_cache=1
+fi
+
+if [[ ! -f "$merged_file" ]]; then
+    shopt -s nullglob
+    matches=("$cache_dir"/"$video_id".*)
+    shopt -u nullglob
+    if (( ${#matches[@]} > 0 )); then
+        merged_file="${matches[0]}"
+    fi
+fi
+
+if [[ -z "$merged_file" || ! -f "$merged_file" ]]; then
+    printf 'Could not locate downloaded video file.\n' >&2
+    exit 1
+fi
+
+source_duration=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$merged_file")
+source_duration_int=${source_duration%.*}
+
+if [[ -z "$source_duration_int" ]]; then
+    printf 'Could not determine source video duration.\n' >&2
+    exit 1
+fi
+
+if [[ "$source_duration" != "$source_duration_int" ]]; then
+    source_duration_int=$((source_duration_int + 1))
+fi
+
+if (( to_seconds_value > source_duration_int )); then
+    printf 'Requested end time exceeds source duration (%ss).\n' "$source_duration" >&2
+    exit 1
+fi
+
+if (( used_cache )); then
+    printf 'Using cached download %s\n' "$merged_file"
+fi
+
+ffmpeg \
+    -hide_banner \
+    -loglevel error \
+    -i "$merged_file" \
+    -ss "$from_seconds" \
+    -t "$duration" \
+    -c:v libx264 \
+    -preset medium \
+    -crf 18 \
+    -c:a aac \
+    -movflags +faststart \
+    -y \
+    "$output_file"
+
+if (( copy_to_clipboard )); then
+    if [[ "$output_file" = /* ]]; then
+        absolute_output_file="$output_file"
+    else
+        absolute_output_file="$PWD/$output_file"
+    fi
+
+    osascript - "$absolute_output_file" <<'EOF'
+on run argv
+    set the clipboard to (POSIX file (item 1 of argv) as alias)
+end run
+EOF
+fi
+
+printf 'Created %s\n' "$output_file"
+
+if (( copy_to_clipboard )); then
+    printf 'Copied %s to clipboard\n' "$output_file"
+fi
