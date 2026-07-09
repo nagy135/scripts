@@ -1,6 +1,7 @@
 #!/bin/bash
 
-conn_pairs=$(cat <<'EOF'
+conn_pairs=$(
+  cat <<'EOF'
 biologia root@78.47.31.136
 swissfunds_dev|sf_dev vnagy@49.12.100.180
 swissfunds_prod|sf_prod svycarskapujcka-new@217.16.184.94
@@ -24,9 +25,12 @@ prod_mdm_logistics_developer|prodmdm_dev developer@46.101.240.200
 prod_mdm_logistics_root|prodmdm_root root@46.101.240.200
 hetzner_mdm_root|hmdm_root|warehouse_root root@116.203.184.95
 hetzner_mdm_developer|hmdm_dev|warehouse_developer developer@116.203.184.95
+hd+_stage_vm1 sensory-root@51.145.135.146
+hd+_prod_vm1 sensory-root@20.71.0.53
+hd+_prod_vm2 sensory-root@20.71.2.124
+sensory-prototypes sensory-prototypes@92.205.25.49
 EOF
 )
-
 
 # old_nixos_infiniter infiniter@49.13.139.140
 # old_nixos_root root@49.13.139.140
