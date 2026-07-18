@@ -16,7 +16,6 @@ chcemauto root@88.99.173.121
 infiniter root@159.89.12.44
 nixos_infiniter infiniter@91.99.204.136
 nixos_root root@91.99.204.136
-pi pi@192.168.210.165
 personal_mdm_logistics_root|pmdm_root root@165.227.164.205
 personal_mdm_logistics_developer|pmdm_dev developer@165.227.164.205
 broken_mdm_logistics_root|bmdm_root root@46.101.144.33
@@ -29,8 +28,11 @@ hd+_stage_vm1 sensory-root@51.145.135.146
 hd+_prod_vm1 sensory-root@20.71.0.53
 hd+_prod_vm2 sensory-root@20.71.2.124
 sensory-prototypes sensory-prototypes@92.205.25.49
+nixpi_infiniter infiniter@nixpi.local
+nixpi_root root@nixpi.local
 EOF
 )
 
 # old_nixos_infiniter infiniter@49.13.139.140
 # old_nixos_root root@49.13.139.140
+# pi pi@192.168.210.165
