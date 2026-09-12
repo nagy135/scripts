@@ -28,8 +28,11 @@ hd+_stage_vm1 sensory-root@51.145.135.146
 hd+_prod_vm1 sensory-root@20.71.0.53
 hd+_prod_vm2 sensory-root@20.71.2.124
 sensory-prototypes sensory-prototypes@92.205.25.49
-nixpi_infiniter infiniter@nixpi.local
-nixpi_root root@nixpi.local
+nixpi_infiniter infiniter@nixpi.tail6650cb.ts.net
+nixpi_root root@nixpi.tail6650cb.ts.net
+lk-revenue_developer developer@81.2.216.138
+metzler_preprod_vm1 cms-app@192.214.183.37
+metzler_preprod_vm2 cms-app@192.214.183.87
 EOF
 )
 
