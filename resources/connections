@@ -30,6 +30,8 @@ hd+_prod_vm2 sensory-root@20.71.2.124
 sensory-prototypes sensory-prototypes@92.205.25.49
 nixpi_infiniter infiniter@nixpi.tail6650cb.ts.net
 nixpi_root root@nixpi.tail6650cb.ts.net
+nixzero_infiniter infiniter@nixzero.tail6650cb.ts.net
+nixzero_root root@nixzero.tail6650cb.ts.net
 lk-revenue_developer developer@81.2.216.138
 metzler_preprod_vm1 cms-app@192.214.183.37
 metzler_preprod_vm2 cms-app@192.214.183.87
