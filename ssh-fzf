@@ -11,17 +11,21 @@ colorize(){
 }
 
 directory="$(dirname "$(realpath "$0")")"
-source $directory/resources/connections
+source "$directory/resources/connections"
 
 CLIP=0
+PRINT_TARGET=0
 case $1 in
     --clip | -c)
         CLIP=1
         ;;
+    --print-target)
+        PRINT_TARGET=1
+        ;;
 esac
 
 choice=$(echo "$conn_pairs" | cut -d ' ' -f1 | fzf --height 50%)
-[ -z "$choice" ] && echo "nothing chosen, exiting..." && exit 1
+[ -z "$choice" ] && echo "nothing chosen, exiting..." >&2 && exit 1
 
 target=$(echo "$conn_pairs" | awk -v choice="$choice" '{
     if ($1 == choice) {
@@ -29,6 +33,13 @@ target=$(echo "$conn_pairs" | awk -v choice="$choice" '{
         exit
     }
 }')
+
+[ -z "$target" ] && echo "no target found, exiting..." >&2 && exit 1
+
+if [ "$PRINT_TARGET" -eq 1 ]; then
+    printf '%s\n' "$target"
+    exit
+fi
 
 colorized=$(colorize $target)
 
@@ -39,4 +50,4 @@ if [ $CLIP -eq 1 ]; then
 fi
 
 echo "${GREEN}running${END} ${BLUE}ssh${END} ${colorized}${END}"
-ssh $target
+ssh "$target"
