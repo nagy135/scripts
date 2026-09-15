@@ -24,24 +24,30 @@ case $1 in
         ;;
 esac
 
-choice=$(echo "$conn_pairs" | cut -d ' ' -f1 | fzf --height 50%)
+# Show and search only host names and addresses; keep users for the next step.
+choice=$(printf '%s\n' "$connections" | fzf --height 50% --prompt 'Host: ' --with-nth=1,2 --nth=1,2)
 [ -z "$choice" ] && echo "nothing chosen, exiting..." >&2 && exit 1
 
-target=$(echo "$conn_pairs" | awk -v choice="$choice" '{
-    if ($1 == choice) {
-        print $2
-        exit
-    }
-}')
+read -r name host user_list <<< "$choice"
+read -r -a users <<< "$user_list"
+if [ -z "$host" ] || [ "${#users[@]}" -eq 0 ]; then
+    echo "no target found, exiting..." >&2
+    exit 1
+fi
 
-[ -z "$target" ] && echo "no target found, exiting..." >&2 && exit 1
+user=${users[0]}
+if [ "${#users[@]}" -gt 1 ]; then
+    user=$(printf '%s\n' "${users[@]}" | fzf --height 50% --prompt "User for $name: ")
+    [ -z "$user" ] && echo "nothing chosen, exiting..." >&2 && exit 1
+fi
+target="$user@$host"
 
 if [ "$PRINT_TARGET" -eq 1 ]; then
     printf '%s\n' "$target"
     exit
 fi
 
-colorized=$(colorize $target)
+colorized=$(colorize "$target")
 
 if [ $CLIP -eq 1 ]; then
     echo -n "$target" | pbcopy
